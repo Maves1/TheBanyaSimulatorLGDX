@@ -61,12 +61,10 @@ public class MainBanyaGame extends ApplicationAdapter {
 		cloudXPos += cloudSpeed;
 
 		batch.begin();
-
 		batch.draw(background, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 		batch.draw(banya, SCREEN_WIDTH / 2 - banyaWidth / 2, 20, banyaWidth, banyaHeight);
 		batch.draw(sunRegion, SCREEN_WIDTH - 200, SCREEN_HEIGHT - 200, sunWidth / 2, sunHeight / 2, sunWidth,  sunHeight, 1.0f, 1.0f, sunRotation);
 		batch.draw(cloud, cloudXPos, SCREEN_HEIGHT - 250, cloudWidth, cloudHeight);
-
 		batch.end();
 	}
 	
