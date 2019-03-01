@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -20,7 +21,6 @@ public class MainBanyaGame extends ApplicationAdapter {
 	Texture banya;
 	Texture sun;
 	Texture cloud;
-
 	TextureRegion sunRegion;
 
 	int banyaWidth = 300;
@@ -42,7 +42,7 @@ public class MainBanyaGame extends ApplicationAdapter {
         gamePreferences = Gdx.app.getPreferences("GamePreferences");
 		SCREEN_HEIGHT = Gdx.graphics.getHeight();
 		SCREEN_WIDTH = Gdx.graphics.getWidth();
-		firstLaunch = gamePreferences.getBoolean("firstLaunch", false);
+		firstLaunch = gamePreferences.getBoolean("firstLaunch", true);
 
 		// Textures
 		batch = new SpriteBatch();
