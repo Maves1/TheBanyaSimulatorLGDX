@@ -3,11 +3,12 @@ package ru.mavesoft.thebanyasim;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -21,11 +22,17 @@ public class MainBanyaGame extends ApplicationAdapter {
 	int SCREEN_WIDTH;
 	boolean firstLaunch;
 
-	SpriteBatch batch;
+    ShapeRenderer shapeRenderer;
+	SpriteBatch spriteBatch;
 	Texture background;
 	Texture banya;
 	Texture sun;
 	TextureRegion sunRegion;
+	Texture man;
+	Texture manBackground;
+
+	int manWidth = 300;
+	int manHeight = 400;
 
 	int banyaWidth = 300;
 	int banyaHeight = 400;
@@ -48,11 +55,14 @@ public class MainBanyaGame extends ApplicationAdapter {
 		SCREEN_WIDTH = Gdx.graphics.getWidth();
 		firstLaunch = gamePreferences.getBoolean("firstLaunch", true);
 
+        shapeRenderer = new ShapeRenderer();
 		// Textures
-		batch = new SpriteBatch();
+		spriteBatch = new SpriteBatch();
 		background = new Texture("background0.png");
 		banya = new Texture("banya1.png");
 		sunRegion = new TextureRegion(new Texture("sun.png"));
+		man = new Texture("man.png");
+		manBackground = new Texture("manBackground.png");
 
         arrayClouds = new Array<Cloud>();
         arrayClouds.add(new Cloud(windDirection, SCREEN_HEIGHT, SCREEN_WIDTH));
@@ -73,20 +83,24 @@ public class MainBanyaGame extends ApplicationAdapter {
             cloudSpawnFrequency = MathUtils.random(9000000000f, 15000000000f);
         }
 
-		batch.begin();
-		batch.draw(background, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-		batch.draw(banya, SCREEN_WIDTH / 2 - banyaWidth / 2, 20, banyaWidth, banyaHeight);
-		batch.draw(sunRegion, SCREEN_WIDTH - 200, SCREEN_HEIGHT - 200, sunWidth / 2, sunHeight / 2, sunWidth,  sunHeight, 1.0f, 1.0f, sunRotation);
-		drawClouds();
-		batch.end();
+		spriteBatch.begin();
+		spriteBatch.draw(background, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		spriteBatch.draw(banya, SCREEN_WIDTH / 2 - banyaWidth / 2, 20, banyaWidth, banyaHeight);
+		spriteBatch.draw(sunRegion, SCREEN_WIDTH - 200, SCREEN_HEIGHT - 200, sunWidth / 2, sunHeight / 2, sunWidth,  sunHeight, 1.0f, 1.0f, sunRotation);
+		drawClouds(spriteBatch);
+        if (Gdx.input.isTouched()) {
+            makeMan(spriteBatch);
+        }
+		spriteBatch.end();
 	}
 	
 	@Override
 	public void dispose () {
-		batch.dispose();
+		spriteBatch.dispose();
+		shapeRenderer.dispose();
 	}
 
-	public void drawClouds() {
+	public void drawClouds(SpriteBatch batch) {
         for (Iterator<Cloud> iterator = arrayClouds.iterator(); iterator.hasNext();) {
             Cloud currCloud = iterator.next();
             if (windDirection == 0) {
@@ -104,5 +118,12 @@ public class MainBanyaGame extends ApplicationAdapter {
         for (Cloud cloud : arrayClouds) {
             batch.draw(cloud.getTexture(), cloud.x, cloud.y, cloud.getWidth(), cloud.getHeight());
         }
+    }
+    public void makeMan(SpriteBatch batch) {
+        Color c = batch.getColor();
+        batch.setColor(c.r, c.g, c.b, 0.5f);
+	    batch.draw(manBackground, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+	    batch.setColor(c.r, c.g, c.b, 1f);
+        batch.draw(man, SCREEN_WIDTH - manWidth, -70, manWidth, manHeight);
     }
 }
