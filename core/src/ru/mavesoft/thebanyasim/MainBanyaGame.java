@@ -8,6 +8,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
+
+import java.util.Iterator;
 
 public class MainBanyaGame extends ApplicationAdapter {
     // Service variables
@@ -20,7 +25,6 @@ public class MainBanyaGame extends ApplicationAdapter {
 	Texture background;
 	Texture banya;
 	Texture sun;
-	Texture cloud;
 	TextureRegion sunRegion;
 
 	int banyaWidth = 300;
@@ -29,12 +33,12 @@ public class MainBanyaGame extends ApplicationAdapter {
 	int sunWidth = 200;
 	int sunHeight = 200;
 	float sunRotation = 0.0f;
-	float sunRotSpeed = 0.1f;
+	float sunRotSpeed = 5.0f;
 
-	int cloudWidth = 200;
-	int cloudHeight = 150;
-	float cloudXPos = 0 - cloudWidth;
-	float cloudSpeed = 0.2f;
+	Array<Cloud> arrayClouds;
+	float timeLastCloudSpawned;
+	float cloudSpawnFrequency = MathUtils.random(9000000000f, 15000000000f);
+	short windDirection = (short) MathUtils.random(1);
 	
 	@Override
 	public void create () {
@@ -49,7 +53,10 @@ public class MainBanyaGame extends ApplicationAdapter {
 		background = new Texture("background0.png");
 		banya = new Texture("banya1.png");
 		sunRegion = new TextureRegion(new Texture("sun.png"));
-		cloud = new Texture("cloud1.png");
+
+        arrayClouds = new Array<Cloud>();
+        arrayClouds.add(new Cloud(windDirection, SCREEN_HEIGHT, SCREEN_WIDTH));
+        timeLastCloudSpawned = TimeUtils.nanoTime();
 	}
 
 	@Override
@@ -57,14 +64,20 @@ public class MainBanyaGame extends ApplicationAdapter {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		sunRotation += sunRotSpeed;
-		cloudXPos += cloudSpeed;
+		sunRotation += sunRotSpeed * Gdx.graphics.getDeltaTime();
+
+		if ((TimeUtils.nanoTime() - timeLastCloudSpawned >= cloudSpawnFrequency)
+                && (arrayClouds.size < 5)) {
+		    arrayClouds.add(new Cloud(windDirection, SCREEN_HEIGHT, SCREEN_WIDTH));
+            timeLastCloudSpawned = TimeUtils.nanoTime();
+            cloudSpawnFrequency = MathUtils.random(9000000000f, 15000000000f);
+        }
 
 		batch.begin();
 		batch.draw(background, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 		batch.draw(banya, SCREEN_WIDTH / 2 - banyaWidth / 2, 20, banyaWidth, banyaHeight);
 		batch.draw(sunRegion, SCREEN_WIDTH - 200, SCREEN_HEIGHT - 200, sunWidth / 2, sunHeight / 2, sunWidth,  sunHeight, 1.0f, 1.0f, sunRotation);
-		batch.draw(cloud, cloudXPos, SCREEN_HEIGHT - 250, cloudWidth, cloudHeight);
+		drawClouds();
 		batch.end();
 	}
 	
@@ -72,4 +85,24 @@ public class MainBanyaGame extends ApplicationAdapter {
 	public void dispose () {
 		batch.dispose();
 	}
+
+	public void drawClouds() {
+        for (Iterator<Cloud> iterator = arrayClouds.iterator(); iterator.hasNext();) {
+            Cloud currCloud = iterator.next();
+            if (windDirection == 0) {
+                currCloud.x -= currCloud.getSpeed() * Gdx.graphics.getDeltaTime();
+                if (currCloud.x < 0 - currCloud.getWidth()) {
+                    iterator.remove();
+                }
+            } else if (windDirection == 1) {
+                currCloud.x += currCloud.getSpeed() * Gdx.graphics.getDeltaTime();
+                if (currCloud.x > SCREEN_WIDTH) {
+                    iterator.remove();
+                }
+            }
+        }
+        for (Cloud cloud : arrayClouds) {
+            batch.draw(cloud.getTexture(), cloud.x, cloud.y, cloud.getWidth(), cloud.getHeight());
+        }
+    }
 }
