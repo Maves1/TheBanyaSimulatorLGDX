@@ -13,11 +13,16 @@ public class Banya {
     private Texture banyaTexture;
     private int level;
 
-    public void createBanya() {
+    public void restoreBanya() {
         name = gamePreferences.getString("banyaName");
         level = gamePreferences.getInteger("banyaLevel");
         banyaTexture = new Texture("banya" + Integer.toString(level) + ".png");
     }
 
+    public void Banya(String name) {
+        this.name = name;
+        level = 0;
+        banyaTexture = new Texture("banya0.png");
+    }
 
 }
