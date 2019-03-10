@@ -3,6 +3,7 @@ package ru.mavesoft.thebanyasim;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class GameManager extends Game {
 
+    public AssetManager assetManager;
     Preferences gamePreferences;
     SpriteBatch spriteBatch;
     BitmapFont bitmapFont;
@@ -25,6 +27,7 @@ public class GameManager extends Game {
 
     @Override
     public void create() {
+        assetManager = new AssetManager();
         gamePreferences = Gdx.app.getPreferences("GamePreferences");
         SCREEN_HEIGHT = Gdx.graphics.getHeight();
         SCREEN_WIDTH = Gdx.graphics.getWidth();

@@ -1,20 +1,23 @@
 package ru.mavesoft.thebanyasim;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.TimeUtils;
 
 public class SplashScreen implements Screen {
 
     GameManager game;
-    AssetManager assetManager = new AssetManager();
     long startTime;
-    Texture t = new Texture("banya0.png");
+    final long SPLASH_DURATION = 3000000000L;
+    Texture background;
 
     public SplashScreen(GameManager gameManager) {
         game = gameManager;
-        startTime = TimeUtils.nanosToMillis(TimeUtils.nanoTime());
+        loadAssets();
+        startTime = TimeUtils.nanoTime();
+        background = new Texture("banya0.png");
     }
 
     @Override
@@ -24,17 +27,29 @@ public class SplashScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         game.spriteBatch.begin();
-        game.spriteBatch.draw(t, 0, 0);
+        game.spriteBatch.draw(background, 0, 0);
         game.spriteBatch.end();
 
-        if (assetManager.update() && TimeUtils.timeSinceMillis(startTime) > 5000) {
+        if (game.assetManager.update() && TimeUtils.nanoTime() - startTime > SPLASH_DURATION) {
             if (game.gamePreferences.getBoolean("firstLaunch", true)) {
                 game.setScreen(new FirstLaunchScreen(game));
             } else {
                 game.setScreen(new MainBanyaGame(game));
             }
         }
+    }
+
+    public void loadAssets() {
+        game.assetManager.load("backgrounds/background0.png", Texture.class);
+        game.assetManager.load("banya1.png", Texture.class);
+        game.assetManager.load("cloud1.png", Texture.class);
+        game.assetManager.load("man.png", Texture.class);
+        game.assetManager.load("manBackground.png", Texture.class);
+        game.assetManager.load("sun.png", Texture.class);
     }
 
     @Override
@@ -59,6 +74,6 @@ public class SplashScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        background.dispose();
     }
 }

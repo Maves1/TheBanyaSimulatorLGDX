@@ -50,11 +50,11 @@ public class MainBanyaGame implements Screen {
 		firstLaunch = game.gamePreferences.getBoolean("firstLaunch", true);
 
 		// Textures
-		background = new Texture("background0.png");
-		banya = new Texture("banya1.png");
-		sunRegion = new TextureRegion(new Texture("sun.png"));
-		man = new Texture("man.png");
-		manBackground = new Texture("manBackground.png");
+		background = game.assetManager.get("backgrounds/background0.png");
+		banya = game.assetManager.get("banya1.png");
+		sunRegion = new TextureRegion((Texture) game.assetManager.get("sun.png"));
+		man = game.assetManager.get("man.png");
+		manBackground = game.assetManager.get("manBackground.png");
 
         arrayClouds = new Array<Cloud>();
         arrayClouds.add(new Cloud(windDirection, SCREEN_HEIGHT, SCREEN_WIDTH));
@@ -63,7 +63,7 @@ public class MainBanyaGame implements Screen {
 
 	@Override
 	public void render (float delta) {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
+		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		sunRotation += sunRotSpeed * Gdx.graphics.getDeltaTime();
