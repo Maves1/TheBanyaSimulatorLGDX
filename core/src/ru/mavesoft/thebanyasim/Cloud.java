@@ -1,5 +1,6 @@
 package ru.mavesoft.thebanyasim;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 
@@ -12,11 +13,11 @@ public class Cloud {
     private int height = 150;
     private Texture texture;
 
-    public Cloud (short direction, float screenHeight, float screenWidth) {
+    public Cloud (short direction, float screenHeight, float screenWidth, AssetManager assetManager) {
         this.direction = direction;
         this.y = screenHeight - height - MathUtils.random(height);
         // TODO: add different png files for clouds
-        texture = new Texture("cloud1.png");
+        texture = assetManager.get("clouds/cloud1.png");
         if (direction == 0) {
             x = screenWidth;
         } else if (direction == 1) {

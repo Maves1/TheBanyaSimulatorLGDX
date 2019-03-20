@@ -17,7 +17,7 @@ public class SplashScreen implements Screen {
         game = gameManager;
         loadAssets();
         startTime = TimeUtils.nanoTime();
-        background = new Texture("banya0.png");
+        background = new Texture("banyas/banya0.png");
     }
 
     @Override
@@ -45,11 +45,12 @@ public class SplashScreen implements Screen {
 
     public void loadAssets() {
         game.assetManager.load("backgrounds/background0.png", Texture.class);
-        game.assetManager.load("banya1.png", Texture.class);
-        game.assetManager.load("cloud1.png", Texture.class);
+        game.assetManager.load("banyas/banya1.png", Texture.class);
+        game.assetManager.load("clouds/cloud1.png", Texture.class);
         game.assetManager.load("man.png", Texture.class);
         game.assetManager.load("manBackground.png", Texture.class);
         game.assetManager.load("sun.png", Texture.class);
+        game.assetManager.load("customers/customer0.png", Texture.class);
     }
 
     @Override

@@ -2,6 +2,7 @@ package ru.mavesoft.thebanyasim;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 
 public class Banya {
@@ -9,8 +10,8 @@ public class Banya {
     Preferences gamePreferences = Gdx.app.getPreferences("gamePreferences");
 
     // Banya properties
-    private String name;
     private Texture banyaTexture;
+    private String name;
     private int level;
 
     public void restoreBanya() {
@@ -19,10 +20,10 @@ public class Banya {
         banyaTexture = new Texture("banya" + Integer.toString(level) + ".png");
     }
 
-    public void Banya(String name) {
+    public void Banya(String name, AssetManager assetManager) {
         this.name = name;
         level = 0;
-        banyaTexture = new Texture("banya0.png");
+        banyaTexture = assetManager.get("banyas/banya0.png");
     }
 
 }

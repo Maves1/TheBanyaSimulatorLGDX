@@ -7,6 +7,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class GameManager extends Game {
@@ -15,6 +16,7 @@ public class GameManager extends Game {
     Preferences gamePreferences;
     SpriteBatch spriteBatch;
     BitmapFont bitmapFont;
+    GlyphLayout layout;
 
     Texture manBackground;
     Texture man;
@@ -33,6 +35,8 @@ public class GameManager extends Game {
         SCREEN_WIDTH = Gdx.graphics.getWidth();
         spriteBatch = new SpriteBatch();
         bitmapFont = new BitmapFont();
+        bitmapFont.getData().setScale(2f);
+        layout = new GlyphLayout();
 
         manBackground = new Texture("manBackground.png");
         man = new Texture("man.png");
@@ -57,5 +61,7 @@ public class GameManager extends Game {
         spriteBatch.draw(manBackground, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
         spriteBatch.setColor(c.r, c.g, c.b, 1f);
         spriteBatch.draw(man, SCREEN_WIDTH - manWidth, -70, manWidth, manHeight);
+        layout.setText(bitmapFont, message);
+        bitmapFont.draw(spriteBatch, message, SCREEN_WIDTH / 2 - layout.width / 2, SCREEN_HEIGHT / 2);
     }
 }

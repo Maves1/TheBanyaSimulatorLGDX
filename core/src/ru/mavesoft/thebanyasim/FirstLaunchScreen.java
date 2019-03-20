@@ -28,7 +28,7 @@ public class FirstLaunchScreen implements Screen {
 
         game.spriteBatch.begin();
         game.spriteBatch.draw(bg, 0, 0, game.SCREEN_WIDTH, game.SCREEN_HEIGHT);
-        game.makeMan("test");
+        game.makeMan("Hey! This text will be replaced, \n for now just tap the screen");
         if (Gdx.input.justTouched()) {
             MyTextInputListener myTextInputListener = new MyTextInputListener();
             Gdx.input.getTextInput(myTextInputListener, "Give your banya a name:",
