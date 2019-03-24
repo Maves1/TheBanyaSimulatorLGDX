@@ -69,6 +69,7 @@ public class FirstLaunchScreen implements Screen {
                 game.gamePreferences.putBoolean("firstLaunch", false);
                 game.gamePreferences.putString("banyaName", text);
                 game.gamePreferences.putInteger("banyaLevel", 0);
+                game.gamePreferences.putLong("banyaMoney", 0);
                 game.gamePreferences.flush();
                 game.setScreen(new MainBanyaGame(game));
             }

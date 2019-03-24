@@ -47,7 +47,7 @@ public class MainBanyaGame implements Screen {
 
 	Array<Customer> arrayCustomers;
 	float timeLastCustomerSpawned;
-	float customerSpawnFrequency = MathUtils.random(7, 20) * 1000000000f;
+	float customerSpawnFrequency = MathUtils.random(7, 15) * 1000000000f;
 
 	public MainBanyaGame(final GameManager gameManager) {
 		// All needed variables are initialized here
@@ -65,7 +65,8 @@ public class MainBanyaGame implements Screen {
 		man = game.assetManager.get(Assets.man);
 		manBackground = game.assetManager.get(Assets.manBackground);
 
-		centerPanel.addElement(banya.getName(), 0, 0, 2);
+		centerPanel.addElement("banyaName", banya.getName(), 0, 30, 2);
+		centerPanel.addElement("banyaMoney", Long.toString(banya.getMoney()), 0, 0, 2);
 
         arrayClouds = new Array<Cloud>();
         arrayClouds.add(new Cloud(windDirection, GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT, game.assetManager));
@@ -82,7 +83,8 @@ public class MainBanyaGame implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		game.camera.update();
 
-
+		banya.controlCustomers();
+		centerPanel.setElement("banyaMoney", Long.toString(banya.getMoney()), 0, 0, 2);
 
 		game.spriteBatch.begin();
 		drawEnvironment();
@@ -102,7 +104,8 @@ public class MainBanyaGame implements Screen {
 
 	@Override
 	public void pause() {
-
+	    game.gamePreferences.putLong("banyaMoney", banya.getMoney());
+	    game.gamePreferences.flush();
 	}
 
 	@Override
@@ -179,9 +182,6 @@ public class MainBanyaGame implements Screen {
 					customer.getWidth(), customer.getHeight());
 		}
 	}
-	public void drawTopPanel() {
-
-	}
 
 	public void processClouds() {
 		if ((TimeUtils.nanoTime() - timeLastCloudSpawned >= cloudSpawnFrequency)
@@ -197,7 +197,7 @@ public class MainBanyaGame implements Screen {
 				&& (arrayCustomers.size < 5)) {
 			arrayCustomers.add(new Customer(GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT, game.assetManager));
 			timeLastCustomerSpawned = TimeUtils.nanoTime();
-			customerSpawnFrequency = MathUtils.random(7, 20) * 1000000000f;
+			customerSpawnFrequency = MathUtils.random(7, 15) * 1000000000f;
 		}
 	}
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.TimeUtils;
 
 public class Customer {
     private int width = 100;
@@ -13,7 +14,9 @@ public class Customer {
     public float y;
     public int direction;
 
-    private float speed = 20f;
+    private float speed = 21f;
+
+    private long timeOfEntering;
 
     private Texture texture;
 
@@ -37,7 +40,7 @@ public class Customer {
     }
 
     public void startWashing() {
-
+        timeOfEntering = TimeUtils.nanoTime();
     }
 
     public boolean contains(Vector2 pointPos) {
@@ -58,5 +61,9 @@ public class Customer {
 
     public float getHeight() {
         return height;
+    }
+
+    public long getTimeOfEntering() {
+        return timeOfEntering;
     }
 }

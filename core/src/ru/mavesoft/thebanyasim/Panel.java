@@ -13,13 +13,11 @@ public class Panel {
     private int y;
 
     GameManager game;
-    private HashMap<Texture, Array<Integer>> panelTextures;
-    private HashMap<String, Array<Integer>> panelTexts;
+    private HashMap<String, PanelElement> panelElements;
 
     public Panel(GameManager gameManager, int x, int y, int width, int height) {
         this.game = gameManager;
-        panelTextures = new HashMap<Texture, Array<Integer>>();
-        panelTexts = new HashMap<String, Array<Integer>>();
+        panelElements = new HashMap<String, PanelElement>();
         this.x = x;
         this.y = y;
         this.width = width;
@@ -27,34 +25,39 @@ public class Panel {
     }
 
     public void draw() {
-        for (HashMap.Entry<Texture, Array<Integer>> entry : panelTextures.entrySet()) {
-            game.spriteBatch.draw(entry.getKey(), x + entry.getValue().get(0),
-                    y + entry.getValue().get(1), entry.getValue().get(2),
-                    entry.getValue().get(3));
-        }
-        for (HashMap.Entry<String, Array<Integer>> entry : panelTexts.entrySet()) {
-            game.bitmapFont.getData().setScale(entry.getValue().get(2));
-            game.bitmapFont.draw(game.spriteBatch, entry.getKey(), x + entry.getValue().get(0),
-                    y + entry.getValue().get(1));
+        for (HashMap.Entry<String, PanelElement> entry : panelElements.entrySet()) {
+            PanelElement panelElement = entry.getValue();
+            if (entry.getValue().getElementType() == PanelElement.TYPE_TEXT) {
+                game.bitmapFont.getData().setScale(panelElement.getScale());
+                game.bitmapFont.draw(game.spriteBatch, panelElement.getText(), x + panelElement.getX(),
+                        y + panelElement.getY());
+            } else {
+                game.spriteBatch.draw(panelElement.getElementTexture(), x + panelElement.getX(),
+                        y + panelElement.getY(), panelElement.getWidth(), panelElement.getHeight());
+            }
         }
     }
 
-    public void addElement(Texture texture, int x, int y, int width, int height) {
-        Array<Integer> array = new Array<Integer>();
-        array.add(x);
-        array.add(y);
-        array.add(width);
-        array.add(height);
-
-        panelTextures.put(texture, array);
+    public void addElement(String key, Texture texture, int x, int y, int width, int height) {
+        panelElements.put(key, new PanelElement(texture, x, y, width, height));
     }
-    public void addElement(String text, int x, int y, int scale) {
-        Array<Integer> array = new Array<Integer>();
-        array.add(x);
-        array.add(y);
-        array.add(scale);
 
-        panelTexts.put(text, array);
+    public void addElement(String key, String text, int x, int y, int scale) {
+        panelElements.put(key, new PanelElement(text, x, y, scale));
+    }
+
+    public void setElement(String key, Texture texture, int x, int y, int width, int height) {
+        if (panelElements.containsKey(key)) {
+            panelElements.remove(key);
+            panelElements.put(key, new PanelElement(texture, x, y, width, height));
+        }
+    }
+
+    public void setElement(String key, String text, int x, int y, int scale) {
+        if (panelElements.containsKey(key)) {
+            panelElements.remove(key);
+            panelElements.put(key, new PanelElement(text, x, y, scale));
+        }
     }
 
     public int getWidth() {
@@ -63,5 +66,69 @@ public class Panel {
 
     public int getHeight() {
         return height;
+    }
+
+    public class PanelElement {
+        final static int TYPE_TEXT = 0;
+        final static int TYPE_TEXTURE = 1;
+
+        private int elementType;
+        private Texture elementTexture;
+        private String text;
+
+        private int x;
+        private int y;
+        private int width;
+        private int height;
+        private int scale;
+
+        public PanelElement(Texture texture, int x, int y, int width, int height) {
+            elementType = PanelElement.TYPE_TEXTURE;
+            this.elementTexture = texture;
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+        }
+
+        public PanelElement(String text, int x, int y, int scale) {
+            elementType = PanelElement.TYPE_TEXT;
+            this.text = text;
+            this.x = x;
+            this.y = y;
+            this.scale = scale;
+        }
+
+        public int getElementType() {
+            return elementType;
+        }
+
+        public Texture getElementTexture() {
+            return elementTexture;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public int getX() {
+            return x;
+        }
+
+        public int getY() {
+            return y;
+        }
+
+        public int getWidth() {
+            return width;
+        }
+
+        public int getHeight() {
+            return height;
+        }
+
+        public int getScale() {
+            return scale;
+        }
     }
 }
