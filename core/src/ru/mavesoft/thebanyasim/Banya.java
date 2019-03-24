@@ -44,4 +44,7 @@ public class Banya {
         }
     }
 
+    public String getName() {
+        return name;
+    }
 }
