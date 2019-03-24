@@ -9,15 +9,16 @@ import com.badlogic.gdx.utils.TimeUtils;
 public class SplashScreen implements Screen {
 
     GameManager game;
-    long startTime;
-    final long SPLASH_DURATION = 3000000000L;
-    Texture background;
+    private long startTime;
+    private final long SPLASH_DURATION = 3000000000L;
+    private Texture background;
 
     public SplashScreen(GameManager gameManager) {
         game = gameManager;
         loadAssets();
         startTime = TimeUtils.nanoTime();
-        background = new Texture("banyas/banya0.png");
+        background = new Texture(Assets.splashScreen);
+        Gdx.app.log("is first launch", Boolean.toString(game.gamePreferences.getBoolean("firstLaunch")));
     }
 
     @Override
@@ -27,15 +28,15 @@ public class SplashScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         game.spriteBatch.begin();
-        game.spriteBatch.draw(background, 0, 0);
+        game.spriteBatch.draw(background, 0, 0, GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT);
         game.spriteBatch.end();
 
         if (game.assetManager.update() && TimeUtils.nanoTime() - startTime > SPLASH_DURATION) {
-            if (game.gamePreferences.getBoolean("firstLaunch", true)) {
+            if (game.gamePreferences.getBoolean("firstLaunch",true)) {
                 game.setScreen(new FirstLaunchScreen(game));
             } else {
                 game.setScreen(new MainBanyaGame(game));
@@ -44,13 +45,16 @@ public class SplashScreen implements Screen {
     }
 
     public void loadAssets() {
-        game.assetManager.load("backgrounds/background0.png", Texture.class);
-        game.assetManager.load("banyas/banya1.png", Texture.class);
-        game.assetManager.load("clouds/cloud1.png", Texture.class);
-        game.assetManager.load("man.png", Texture.class);
-        game.assetManager.load("manBackground.png", Texture.class);
-        game.assetManager.load("sun.png", Texture.class);
-        game.assetManager.load("customers/customer0.png", Texture.class);
+        game.assetManager.load(Assets.backgrounds[game.gamePreferences.getInteger("banyaLevel", 0)], Texture.class);
+        game.assetManager.load(Assets.banyas[game.gamePreferences.getInteger("banyaLevel", 0)], Texture.class);
+        game.assetManager.load(Assets.clouds[0], Texture.class);
+        game.assetManager.load(Assets.clouds[1], Texture.class);
+        game.assetManager.load(Assets.clouds[2], Texture.class);
+        game.assetManager.load(Assets.clouds[3], Texture.class);
+        game.assetManager.load(Assets.man, Texture.class);
+        game.assetManager.load(Assets.manBackground, Texture.class);
+        game.assetManager.load(Assets.sun, Texture.class);
+        game.assetManager.load(Assets.customers[0], Texture.class);
     }
 
     @Override

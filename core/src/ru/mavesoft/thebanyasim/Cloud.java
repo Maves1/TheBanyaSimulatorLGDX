@@ -13,11 +13,10 @@ public class Cloud {
     private int height = 150;
     private Texture texture;
 
-    public Cloud (short direction, float screenHeight, float screenWidth, AssetManager assetManager) {
+    public Cloud (short direction, float screenWidth, float screenHeight, AssetManager assetManager) {
         this.direction = direction;
         this.y = screenHeight - height - MathUtils.random(height);
-        // TODO: add different png files for clouds
-        texture = assetManager.get("clouds/cloud1.png");
+        texture = assetManager.get(Assets.clouds[MathUtils.random(0, 3)]);
         if (direction == 0) {
             x = screenWidth;
         } else if (direction == 1) {

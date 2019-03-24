@@ -3,7 +3,7 @@ package ru.mavesoft.thebanyasim;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 
 public class Customer {
     private int width = 100;
@@ -18,7 +18,7 @@ public class Customer {
     private Texture texture;
 
     public Customer(int screenWidth, int screenHeight, AssetManager assetManager) {
-        texture = assetManager.get("customers/customer0.png");
+        texture = assetManager.get(Assets.customers[0]);
         direction = MathUtils.random(1);
         y = 10;
         if (direction == 0) {
@@ -36,12 +36,16 @@ public class Customer {
         }
     }
 
-    public void enterBanya() {
+    public void startWashing() {
 
     }
 
-    public void leaveBanya() {
-
+    public boolean contains(Vector2 pointPos) {
+        if (pointPos.x > this.x && pointPos.x < this.x + this.getWidth() &&
+                pointPos.y > this.y && pointPos.y < this.y + this.getHeight()) {
+            return true;
+        }
+        return false;
     }
 
     public Texture getTexture() {

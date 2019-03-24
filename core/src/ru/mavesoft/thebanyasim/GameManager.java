@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -14,15 +15,18 @@ public class GameManager extends Game {
 
     public AssetManager assetManager;
     Preferences gamePreferences;
+    OrthographicCamera camera;
     SpriteBatch spriteBatch;
     BitmapFont bitmapFont;
     GlyphLayout layout;
 
+    Banya banya;
+
     Texture manBackground;
     Texture man;
 
-    int SCREEN_HEIGHT;
-    int SCREEN_WIDTH;
+    static int SCREEN_HEIGHT;
+    static int SCREEN_WIDTH;
 
     int manWidth = 300;
     int manHeight = 400;
@@ -31,15 +35,21 @@ public class GameManager extends Game {
     public void create() {
         assetManager = new AssetManager();
         gamePreferences = Gdx.app.getPreferences("GamePreferences");
-        SCREEN_HEIGHT = Gdx.graphics.getHeight();
-        SCREEN_WIDTH = Gdx.graphics.getWidth();
+        camera = new OrthographicCamera();
+        camera.position.set(0, 0, 0);
+        camera.setToOrtho(false, 480, 754);
+        // SCREEN_HEIGHT = Gdx.graphics.getHeight();
+        // SCREEN_WIDTH = Gdx.graphics.getWidth();
+        SCREEN_HEIGHT = 754;
+        SCREEN_WIDTH = 480;
         spriteBatch = new SpriteBatch();
+        spriteBatch.setProjectionMatrix(camera.combined);
         bitmapFont = new BitmapFont();
         bitmapFont.getData().setScale(2f);
         layout = new GlyphLayout();
 
-        manBackground = new Texture("manBackground.png");
-        man = new Texture("man.png");
+        manBackground = new Texture(Assets.manBackground);
+        man = new Texture(Assets.man);
 
         this.setScreen(new SplashScreen(this));
     }

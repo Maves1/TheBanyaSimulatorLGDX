@@ -1,29 +1,47 @@
 package ru.mavesoft.thebanyasim;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.utils.Array;
 
 public class Banya {
 
-    Preferences gamePreferences = Gdx.app.getPreferences("gamePreferences");
+    GameManager game;
 
     // Banya properties
     private Texture banyaTexture;
     private String name;
     private int level;
 
-    public void restoreBanya() {
-        name = gamePreferences.getString("banyaName");
-        level = gamePreferences.getInteger("banyaLevel");
-        banyaTexture = new Texture("banya" + Integer.toString(level) + ".png");
+    // Banya Preferences for all levels
+    private int[] banyaCapacities = {2, 3, 7, 10, 15, 25, 50};
+
+    // Banya Preferences for current level
+    private int banyaCapacity;
+
+    Array<Customer> customersIn;
+
+    public Banya(GameManager gameManager) {
+        game = gameManager;
+        this.name = game.gamePreferences.getString("banyaName");
+        this.level = game.gamePreferences.getInteger("banyaLevel");
+        banyaTexture = game.assetManager.get(Assets.banyas[level]);
+        customersIn = new Array<Customer>();
+        banyaCapacity = banyaCapacities[level];
     }
 
-    public void Banya(String name, AssetManager assetManager) {
-        this.name = name;
-        level = 0;
-        banyaTexture = assetManager.get("banyas/banya0.png");
+    public boolean takeCustomer(Customer newCustomer) {
+        if (customersIn.size < banyaCapacity) {
+            customersIn.add(newCustomer);
+            newCustomer.startWashing();
+            return true;
+        }
+        return false;
+    }
+
+    public void controlCustomers() {
+        for (Customer customer : customersIn) {
+
+        }
     }
 
 }

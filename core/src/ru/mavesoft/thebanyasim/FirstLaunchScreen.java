@@ -13,7 +13,7 @@ public class FirstLaunchScreen implements Screen {
 
     public FirstLaunchScreen(GameManager gameManager) {
         game = gameManager;
-        bg = game.assetManager.get("backgrounds/background0.png");
+        bg = game.assetManager.get(Assets.backgrounds[0]);
     }
 
     @Override
@@ -23,11 +23,11 @@ public class FirstLaunchScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(1, 0, 0, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         game.spriteBatch.begin();
-        game.spriteBatch.draw(bg, 0, 0, game.SCREEN_WIDTH, game.SCREEN_HEIGHT);
+        game.spriteBatch.draw(bg, 0, 0, GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT);
         game.makeMan("Hey! This text will be replaced, \n for now just tap the screen");
         if (Gdx.input.justTouched()) {
             MyTextInputListener myTextInputListener = new MyTextInputListener();
@@ -65,7 +65,13 @@ public class FirstLaunchScreen implements Screen {
     public class MyTextInputListener implements Input.TextInputListener {
         @Override
         public void input (String text) {
-            game.setScreen(new MainBanyaGame(game));
+            if (text.length() > 3 && text.length() < 12) {
+                game.gamePreferences.putBoolean("firstLaunch", false);
+                game.gamePreferences.putString("banyaName", text);
+                game.gamePreferences.putInteger("banyaLevel", 0);
+                game.gamePreferences.flush();
+                game.setScreen(new MainBanyaGame(game));
+            }
         }
 
         @Override

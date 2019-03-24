@@ -2,11 +2,11 @@ package ru.mavesoft.thebanyasim;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -15,12 +15,12 @@ import java.util.Iterator;
 public class MainBanyaGame implements Screen {
     // Service variables
 	GameManager game;
-	int SCREEN_HEIGHT;
-	int SCREEN_WIDTH;
 	boolean firstLaunch;
-
+	
+	Banya banya;
+	
 	Texture background;
-	Texture banya;
+	Texture banyaTexture;
 	Texture sun;
 	TextureRegion sunRegion;
 	Texture man;
@@ -39,62 +39,46 @@ public class MainBanyaGame implements Screen {
 
 	Array<Cloud> arrayClouds;
 	float timeLastCloudSpawned;
-	float cloudSpawnFrequency = MathUtils.random(9, 15) * 1000000000f;
+	float cloudSpawnFrequency = MathUtils.random(15, 20) * 1000000000f;
 	short windDirection = (short) MathUtils.random(1);
 
 	Array<Customer> arrayCustomers;
 	float timeLastCustomerSpawned;
-	float customerSpawnFrequency = MathUtils.random(20, 40) * 1000000000f;
+	float customerSpawnFrequency = MathUtils.random(7, 20) * 1000000000f;
 
 	public MainBanyaGame(final GameManager gameManager) {
-		// All needed variables (such as screen height) are initialized here
+		// All needed variables are initialized here
 		this.game = gameManager;
-		SCREEN_HEIGHT = Gdx.graphics.getHeight();
-		SCREEN_WIDTH = Gdx.graphics.getWidth();
-		firstLaunch = game.gamePreferences.getBoolean("firstLaunch", true);
+		// SCREEN_HEIGHT = Gdx.graphics.getHeight();
+		// SCREEN_WIDTH = Gdx.graphics.getWidth();
+		banya = new Banya(game);
 
 		// Textures
-		background = game.assetManager.get("backgrounds/background0.png");
-		banya = game.assetManager.get("banyas/banya1.png");
-		sunRegion = new TextureRegion((Texture) game.assetManager.get("sun.png"));
-		man = game.assetManager.get("man.png");
-		manBackground = game.assetManager.get("manBackground.png");
+		background = game.assetManager.get(Assets.backgrounds[0]);
+		banyaTexture = game.assetManager.get(Assets.banyas[0]);
+		sunRegion = new TextureRegion((Texture) game.assetManager.get(Assets.sun));
+		man = game.assetManager.get(Assets.man);
+		manBackground = game.assetManager.get(Assets.manBackground);
 
         arrayClouds = new Array<Cloud>();
-        arrayClouds.add(new Cloud(windDirection, SCREEN_HEIGHT, SCREEN_WIDTH, game.assetManager));
+        arrayClouds.add(new Cloud(windDirection, GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT, game.assetManager));
         timeLastCloudSpawned = TimeUtils.nanoTime();
 
         arrayCustomers = new Array<Customer>();
-        arrayCustomers.add(new Customer(SCREEN_WIDTH, SCREEN_HEIGHT, game.assetManager));
+        arrayCustomers.add(new Customer(GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT, game.assetManager));
         timeLastCustomerSpawned = TimeUtils.nanoTime();
 	}
 
 	@Override
 	public void render (float delta) {
-		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		game.camera.update();
 
-		sunRotation += sunRotSpeed * Gdx.graphics.getDeltaTime();
 
-		if ((TimeUtils.nanoTime() - timeLastCloudSpawned >= cloudSpawnFrequency)
-                && (arrayClouds.size < 5)) {
-		    arrayClouds.add(new Cloud(windDirection, SCREEN_HEIGHT, SCREEN_WIDTH, game.assetManager));
-            timeLastCloudSpawned = TimeUtils.nanoTime();
-            cloudSpawnFrequency = MathUtils.random(9, 15) * 1000000000f;
-        }
-
-		if ((TimeUtils.nanoTime() - timeLastCustomerSpawned >= customerSpawnFrequency)
-				&& (arrayCustomers.size < 5)) {
-			arrayCustomers.add(new Customer(SCREEN_HEIGHT, SCREEN_WIDTH, game.assetManager));
-			timeLastCustomerSpawned = TimeUtils.nanoTime();
-			customerSpawnFrequency = MathUtils.random(9, 15) * 1000000000f;
-		}
 
 		game.spriteBatch.begin();
 		drawEnvironment();
-        if (Gdx.input.isTouched()) {
-
-        }
 		game.spriteBatch.end();
 	}
 
@@ -126,16 +110,20 @@ public class MainBanyaGame implements Screen {
 	@Override
 	public void dispose () {
 		background.dispose();
-		banya.dispose();
+		banyaTexture.dispose();
 		sun.dispose();
 		man.dispose();
 		manBackground.dispose();
 	}
 
     public void drawEnvironment() {
-		game.spriteBatch.draw(background, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-		game.spriteBatch.draw(banya, SCREEN_WIDTH / 2 - banyaWidth / 2, 20, banyaWidth, banyaHeight);
-		game.spriteBatch.draw(sunRegion, SCREEN_WIDTH - 200, SCREEN_HEIGHT - 200,
+		processClouds();
+		processCustomers();
+		sunRotation += sunRotSpeed * Gdx.graphics.getDeltaTime();
+		
+		game.spriteBatch.draw(background, 0, 0, GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT);
+		game.spriteBatch.draw(banyaTexture, GameManager.SCREEN_WIDTH / 2 - banyaWidth / 2, 20, banyaWidth, banyaHeight);
+		game.spriteBatch.draw(sunRegion, GameManager.SCREEN_WIDTH - 200, GameManager.SCREEN_HEIGHT - 200,
                 sunWidth / 2, sunHeight / 2, sunWidth,  sunHeight, 1.0f, 1.0f, sunRotation);
 		for (Iterator<Cloud> iterator = arrayClouds.iterator(); iterator.hasNext();) {
 			Cloud currCloud = iterator.next();
@@ -146,7 +134,7 @@ public class MainBanyaGame implements Screen {
 				}
 			} else if (windDirection == 1) {
 				currCloud.x += currCloud.getSpeed() * Gdx.graphics.getDeltaTime();
-				if (currCloud.x > SCREEN_WIDTH) {
+				if (currCloud.x > GameManager.SCREEN_WIDTH) {
 					iterator.remove();
 				}
 			}
@@ -161,18 +149,19 @@ public class MainBanyaGame implements Screen {
 
 		    if (customer.x < 0 - customer.getWidth() && customer.direction == 0) {
 		    	iterator.remove();
-			} else if (customer.x > SCREEN_WIDTH && customer.direction == 1) {
+			} else if (customer.x > GameManager.SCREEN_WIDTH && customer.direction == 1) {
 		    	iterator.remove();
 			}
 			if (Gdx.input.isTouched()) {
-				float touchX = Gdx.input.getX();
-				float touchY = Gdx.input.getY();
+				Vector2 touchPos = new Vector2(Gdx.input.getX(), GameManager.SCREEN_HEIGHT - Gdx.input.getY());
 
-				// Gdx.app.log("Touch Position", touchX + " " + touchY);
+				// Gdx.app.log("Touch Position", touchPos.x + " " + touchPos.y);
+				// Gdx.app.log("Customer Position", customer.x + " " + customer.y);
 
-				if (touchX > customer.x && touchX < customer.x + customer.getWidth() &&
-						touchY < SCREEN_HEIGHT - customer.y && touchY > SCREEN_HEIGHT - (customer.y + customer.getHeight())) {
-					iterator.remove();
+				if (customer.contains(touchPos)) {
+					if (banya.takeCustomer(customer)) {
+						iterator.remove();
+					}
 				}
 			}
         }
@@ -180,6 +169,24 @@ public class MainBanyaGame implements Screen {
         for (Customer customer : arrayCustomers) {
         	game.spriteBatch.draw(customer.getTexture(), customer.x, customer.y,
 					customer.getWidth(), customer.getHeight());
+		}
+	}
+
+	public void processClouds() {
+		if ((TimeUtils.nanoTime() - timeLastCloudSpawned >= cloudSpawnFrequency)
+				&& (arrayClouds.size < 5)) {
+			arrayClouds.add(new Cloud(windDirection, GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT, game.assetManager));
+			timeLastCloudSpawned = TimeUtils.nanoTime();
+			cloudSpawnFrequency = MathUtils.random(15, 20) * 1000000000f;
+		}
+	}
+
+	public void processCustomers() {
+		if ((TimeUtils.nanoTime() - timeLastCustomerSpawned >= customerSpawnFrequency)
+				&& (arrayCustomers.size < 5)) {
+			arrayCustomers.add(new Customer(GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT, game.assetManager));
+			timeLastCustomerSpawned = TimeUtils.nanoTime();
+			customerSpawnFrequency = MathUtils.random(7, 20) * 1000000000f;
 		}
 	}
 }
