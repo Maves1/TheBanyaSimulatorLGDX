@@ -32,8 +32,8 @@ public class MainBanyaGame implements Screen {
 	int manWidth = 300;
 	int manHeight = 400;
 
-	int banyaWidth = 300;
-	int banyaHeight = 400;
+	int banyaWidth = 350;
+	int banyaHeight = 500;
 
 	int sunWidth = 200;
 	int sunHeight = 200;
@@ -48,6 +48,8 @@ public class MainBanyaGame implements Screen {
 	Array<Customer> arrayCustomers;
 	float timeLastCustomerSpawned;
 	float customerSpawnFrequency = MathUtils.random(7, 15) * 1000000000f;
+
+	long timeSinceLastTouch;
 
 	public MainBanyaGame(final GameManager gameManager) {
 		// All needed variables are initialized here
@@ -133,7 +135,7 @@ public class MainBanyaGame implements Screen {
 		sunRotation += sunRotSpeed * Gdx.graphics.getDeltaTime();
 		
 		game.spriteBatch.draw(background, 0, 0, GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT);
-		game.spriteBatch.draw(banyaTexture, GameManager.SCREEN_WIDTH / 2 - banyaWidth / 2, 20, banyaWidth, banyaHeight);
+		game.spriteBatch.draw(banyaTexture, GameManager.SCREEN_WIDTH / 2 - banyaWidth / 2, 25, banyaWidth, banyaHeight);
 		game.spriteBatch.draw(sunRegion, GameManager.SCREEN_WIDTH - 200, GameManager.SCREEN_HEIGHT - 200,
                 sunWidth / 2, sunHeight / 2, sunWidth,  sunHeight, 1.0f, 1.0f, sunRotation);
 		for (Iterator<Cloud> iterator = arrayClouds.iterator(); iterator.hasNext();) {
@@ -163,7 +165,7 @@ public class MainBanyaGame implements Screen {
 			} else if (customer.x > GameManager.SCREEN_WIDTH && customer.direction == 1) {
 		    	iterator.remove();
 			}
-			if (Gdx.input.isTouched()) {
+			if (Gdx.input.justTouched() && TimeUtils.nanoTime() - timeSinceLastTouch > 600000000L) {
 				Vector2 touchPos = new Vector2(Gdx.input.getX(), GameManager.SCREEN_HEIGHT - Gdx.input.getY());
 
 				// Gdx.app.log("Touch Position", touchPos.x + " " + touchPos.y);
@@ -171,6 +173,7 @@ public class MainBanyaGame implements Screen {
 
 				if (customer.contains(touchPos)) {
 					if (banya.takeCustomer(customer)) {
+						timeSinceLastTouch = TimeUtils.nanoTime();
 						iterator.remove();
 					}
 				}

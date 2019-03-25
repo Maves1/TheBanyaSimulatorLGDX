@@ -52,7 +52,7 @@ public class Banya {
     public void controlCustomers() {
         for (Iterator<Customer> iterator = customersIn.iterator(); iterator.hasNext(); ) {
             Customer currCustomer = iterator.next();
-            if (TimeUtils.nanoTime() - currCustomer.getTimeOfEntering() >= banyaWashDuration * 1000000000) {
+            if (TimeUtils.nanoTime() - currCustomer.getTimeOfEntering() >= banyaWashDuration * 1000000000L) {
                 iterator.remove();
                 money += banyaProfit;
             }
