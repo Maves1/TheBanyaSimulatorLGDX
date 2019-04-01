@@ -1,7 +1,6 @@
 package ru.mavesoft.thebanyasim;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.utils.Array;
 
 import java.util.HashMap;
 
@@ -13,6 +12,7 @@ public class Panel {
     private int y;
 
     GameManager game;
+    private Texture background;
     private HashMap<String, PanelElement> panelElements;
 
     public Panel(GameManager gameManager, int x, int y, int width, int height) {
@@ -25,12 +25,15 @@ public class Panel {
     }
 
     public void draw() {
+        if (background != null) {
+            game.spriteBatch.draw(background, x, y, width, height);
+        }
         for (HashMap.Entry<String, PanelElement> entry : panelElements.entrySet()) {
             PanelElement panelElement = entry.getValue();
             if (entry.getValue().getElementType() == PanelElement.TYPE_TEXT) {
                 game.bitmapFont.getData().setScale(panelElement.getScale());
                 game.bitmapFont.draw(game.spriteBatch, panelElement.getText(), x + panelElement.getX(),
-                        y + panelElement.getY());
+                        y + panelElement.getY() + game.bitmapFont.getData().xHeight * 2);
             } else {
                 game.spriteBatch.draw(panelElement.getElementTexture(), x + panelElement.getX(),
                         y + panelElement.getY(), panelElement.getWidth(), panelElement.getHeight());
@@ -58,6 +61,10 @@ public class Panel {
             panelElements.remove(key);
             panelElements.put(key, new PanelElement(text, x, y, scale));
         }
+    }
+
+    public void setBackground(Texture bgTexture) {
+        background = bgTexture;
     }
 
     public int getWidth() {

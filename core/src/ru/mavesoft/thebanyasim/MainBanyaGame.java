@@ -18,9 +18,14 @@ public class MainBanyaGame implements Screen {
 	boolean firstLaunch;
 	
 	Banya banya;
+
 	Panel centerPanel;
 	int centerPanelWidth = 250;
-	int centerPanelHeight = 200;
+	int centerPanelHeight = 125;
+
+	Panel statusPanel;
+	int statusPanelWidth = GameManager.SCREEN_WIDTH;
+	int statusPanelHeight = 50;
 	
 	Texture background;
 	Texture banyaTexture;
@@ -28,6 +33,7 @@ public class MainBanyaGame implements Screen {
 	TextureRegion sunRegion;
 	Texture man;
 	Texture manBackground;
+	Texture panelBackground;
 
 	int manWidth = 300;
 	int manHeight = 400;
@@ -58,7 +64,9 @@ public class MainBanyaGame implements Screen {
 		// SCREEN_WIDTH = Gdx.graphics.getWidth();
 		banya = new Banya(game);
 		centerPanel = new Panel(game, GameManager.SCREEN_WIDTH / 2 - centerPanelWidth / 2,
-				GameManager.SCREEN_HEIGHT - 100, centerPanelWidth, centerPanelHeight);
+				GameManager.SCREEN_HEIGHT - 250, centerPanelWidth, centerPanelHeight);
+		statusPanel = new Panel(game, 0,
+				GameManager.SCREEN_HEIGHT - statusPanelHeight, statusPanelWidth, statusPanelHeight);
 
 		// Textures
 		background = game.assetManager.get(Assets.backgrounds[0]);
@@ -66,9 +74,13 @@ public class MainBanyaGame implements Screen {
 		sunRegion = new TextureRegion((Texture) game.assetManager.get(Assets.sun));
 		man = game.assetManager.get(Assets.man);
 		manBackground = game.assetManager.get(Assets.manBackground);
+		panelBackground = game.assetManager.get(Assets.panelBackground);
 
+		centerPanel.setBackground(panelBackground);
 		centerPanel.addElement("banyaName", banya.getName(), 0, 30, 2);
 		centerPanel.addElement("banyaMoney", Long.toString(banya.getMoney()), 0, 0, 2);
+
+		statusPanel.setBackground(panelBackground);
 
         arrayClouds = new Array<Cloud>();
         arrayClouds.add(new Cloud(windDirection, GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT, game.assetManager));
@@ -91,6 +103,7 @@ public class MainBanyaGame implements Screen {
 		game.spriteBatch.begin();
 		drawEnvironment();
 		centerPanel.draw();
+		statusPanel.draw();
 		game.spriteBatch.end();
 	}
 
@@ -127,6 +140,7 @@ public class MainBanyaGame implements Screen {
 		sun.dispose();
 		man.dispose();
 		manBackground.dispose();
+		panelBackground.dispose();
 	}
 
     public void drawEnvironment() {
@@ -136,7 +150,7 @@ public class MainBanyaGame implements Screen {
 		
 		game.spriteBatch.draw(background, 0, 0, GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT);
 		game.spriteBatch.draw(banyaTexture, GameManager.SCREEN_WIDTH / 2 - banyaWidth / 2, 25, banyaWidth, banyaHeight);
-		game.spriteBatch.draw(sunRegion, GameManager.SCREEN_WIDTH - 200, GameManager.SCREEN_HEIGHT - 200,
+		game.spriteBatch.draw(sunRegion, GameManager.SCREEN_WIDTH - 200, GameManager.SCREEN_HEIGHT - 225,
                 sunWidth / 2, sunHeight / 2, sunWidth,  sunHeight, 1.0f, 1.0f, sunRotation);
 		for (Iterator<Cloud> iterator = arrayClouds.iterator(); iterator.hasNext();) {
 			Cloud currCloud = iterator.next();

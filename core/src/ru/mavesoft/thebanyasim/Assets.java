@@ -11,7 +11,8 @@ public class Assets {
     static String[] customers = {"customers/customer1.png", "customers/customer2.png",
             "customers/customer3.png"};
     static String man = "man.png";
-    static String manBackground = "manBackground.png";
+    static String manBackground = "backgrounds/manBackground.png";
     static String sun = "sun.png";
     static String splashScreen = "splashscreen.png";
+    static String panelBackground = "backgrounds/panelBackground.png";
 }

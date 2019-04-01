@@ -55,6 +55,7 @@ public class SplashScreen implements Screen {
         game.assetManager.load(Assets.manBackground, Texture.class);
         game.assetManager.load(Assets.sun, Texture.class);
         game.assetManager.load(Assets.customers[0], Texture.class);
+        game.assetManager.load(Assets.panelBackground, Texture.class);
     }
 
     @Override
