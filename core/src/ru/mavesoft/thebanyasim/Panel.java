@@ -34,9 +34,16 @@ public class Panel {
                 game.bitmapFont.getData().setScale(panelElement.getScale());
                 game.bitmapFont.draw(game.spriteBatch, panelElement.getText(), x + panelElement.getX(),
                         y + panelElement.getY() + game.bitmapFont.getData().xHeight * 2);
-            } else {
+            } else if (entry.getValue().getElementType() == PanelElement.TYPE_TEXTURE) {
                 game.spriteBatch.draw(panelElement.getElementTexture(), x + panelElement.getX(),
                         y + panelElement.getY(), panelElement.getWidth(), panelElement.getHeight());
+            } else if (entry.getValue().getElementType() == PanelIndicator.TYPE_INDICATOR) {
+                game.spriteBatch.draw(panelElement.getElementTexture(), x + panelElement.getX(),
+                        y + panelElement.getY(), panelElement.getWidth(), panelElement.getHeight());
+                game.bitmapFont.getData().setScale(panelElement.getScale());
+                game.bitmapFont.draw(game.spriteBatch, panelElement.getText(),
+                        x + panelElement.getX() + panelElement.getWidth(),
+                        y + panelElement.getY() + game.bitmapFont.getData().xHeight * 2);
             }
         }
     }
@@ -47,6 +54,10 @@ public class Panel {
 
     public void addElement(String key, String text, int x, int y, int scale) {
         panelElements.put(key, new PanelElement(text, x, y, scale));
+    }
+
+    public void addElement(String key, PanelElement element) {
+        panelElements.put(key, element);
     }
 
     public void setElement(String key, Texture texture, int x, int y, int width, int height) {
@@ -63,6 +74,13 @@ public class Panel {
         }
     }
 
+    public void setElement(String key, PanelElement panelElement) {
+        if (panelElements.containsKey(key)) {
+            panelElements.remove(key);
+            panelElements.put(key, panelElement);
+        }
+    }
+
     public void setBackground(Texture bgTexture) {
         background = bgTexture;
     }
@@ -73,69 +91,5 @@ public class Panel {
 
     public int getHeight() {
         return height;
-    }
-
-    public class PanelElement {
-        final static int TYPE_TEXT = 0;
-        final static int TYPE_TEXTURE = 1;
-
-        private int elementType;
-        private Texture elementTexture;
-        private String text;
-
-        private int x;
-        private int y;
-        private int width;
-        private int height;
-        private int scale;
-
-        public PanelElement(Texture texture, int x, int y, int width, int height) {
-            elementType = PanelElement.TYPE_TEXTURE;
-            this.elementTexture = texture;
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-        }
-
-        public PanelElement(String text, int x, int y, int scale) {
-            elementType = PanelElement.TYPE_TEXT;
-            this.text = text;
-            this.x = x;
-            this.y = y;
-            this.scale = scale;
-        }
-
-        public int getElementType() {
-            return elementType;
-        }
-
-        public Texture getElementTexture() {
-            return elementTexture;
-        }
-
-        public String getText() {
-            return text;
-        }
-
-        public int getX() {
-            return x;
-        }
-
-        public int getY() {
-            return y;
-        }
-
-        public int getWidth() {
-            return width;
-        }
-
-        public int getHeight() {
-            return height;
-        }
-
-        public int getScale() {
-            return scale;
-        }
     }
 }

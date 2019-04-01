@@ -1,5 +1,6 @@
 package ru.mavesoft.thebanyasim;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -26,6 +27,10 @@ public class MainBanyaGame implements Screen {
 	Panel statusPanel;
 	int statusPanelWidth = GameManager.SCREEN_WIDTH;
 	int statusPanelHeight = 50;
+
+	PanelIndicator waterPanelIndicator;
+	PanelIndicator besomPanelIndicator;
+	int indicatorWidth = 40;
 	
 	Texture background;
 	Texture banyaTexture;
@@ -34,6 +39,8 @@ public class MainBanyaGame implements Screen {
 	Texture man;
 	Texture manBackground;
 	Texture panelBackground;
+	Texture waterdropIndicator;
+	Texture besomsIndicator;
 
 	int manWidth = 300;
 	int manHeight = 400;
@@ -75,12 +82,23 @@ public class MainBanyaGame implements Screen {
 		man = game.assetManager.get(Assets.man);
 		manBackground = game.assetManager.get(Assets.manBackground);
 		panelBackground = game.assetManager.get(Assets.panelBackground);
+		waterdropIndicator = game.assetManager.get(Assets.waterIndicator);
+		besomsIndicator = game.assetManager.get(Assets.besomIndicator);
 
 		centerPanel.setBackground(panelBackground);
 		centerPanel.addElement("banyaName", banya.getName(), 0, 30, 2);
 		centerPanel.addElement("banyaMoney", Long.toString(banya.getMoney()), 0, 0, 2);
 
 		statusPanel.setBackground(panelBackground);
+		waterPanelIndicator = new PanelIndicator(waterdropIndicator,
+				Integer.toString(banya.getWaterAmount()),
+				GameManager.SCREEN_WIDTH - indicatorWidth * 4 - 20, 0,
+				indicatorWidth, statusPanelHeight, 2);
+		besomPanelIndicator = new PanelIndicator(besomsIndicator,
+				Integer.toString(banya.getBesomsAmount()),
+				GameManager.SCREEN_WIDTH - indicatorWidth * 2, 0, 50, statusPanelHeight, 2);
+		statusPanel.addElement("waterAmountIndicator", waterPanelIndicator);
+		statusPanel.addElement("besomsAmountIndicator", besomPanelIndicator);
 
         arrayClouds = new Array<Cloud>();
         arrayClouds.add(new Cloud(windDirection, GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT, game.assetManager));
@@ -120,6 +138,8 @@ public class MainBanyaGame implements Screen {
 	@Override
 	public void pause() {
 	    game.gamePreferences.putLong("banyaMoney", banya.getMoney());
+	    game.gamePreferences.putInteger("banyaWaterAmount", banya.getWaterAmount());
+	    game.gamePreferences.putInteger("banyaBesomsAmount", banya.getBesomsAmount());
 	    game.gamePreferences.flush();
 	}
 

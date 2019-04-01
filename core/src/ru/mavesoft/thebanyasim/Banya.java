@@ -15,6 +15,8 @@ public class Banya {
     private String name;
     private int level;
     private long money;
+    private int waterAmount;
+    private int besomsAmount;
 
     // Banya Preferences for all levels
     private int[] banyaCapacities = {2, 3, 7, 10, 15, 25, 50};
@@ -33,6 +35,8 @@ public class Banya {
         this.name = game.gamePreferences.getString("banyaName");
         this.level = game.gamePreferences.getInteger("banyaLevel");
         this.money = game.gamePreferences.getLong("banyaMoney");
+        this.waterAmount = game.gamePreferences.getInteger("banyaWaterAmount");
+        this.besomsAmount = game.gamePreferences.getInteger("banyaBesomsAmount");
         banyaTexture = game.assetManager.get(Assets.banyas[level]);
         customersIn = new Array<Customer>();
         banyaCapacity = banyaCapacities[level];
@@ -65,5 +69,13 @@ public class Banya {
 
     public long getMoney() {
         return money;
+    }
+
+    public int getWaterAmount() {
+        return waterAmount;
+    }
+
+    public int getBesomsAmount() {
+        return besomsAmount;
     }
 }
