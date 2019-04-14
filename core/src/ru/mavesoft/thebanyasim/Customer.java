@@ -14,7 +14,7 @@ public class Customer {
     public float y;
     public int direction;
 
-    private float speed = 21f;
+    private float speed = 24f;
 
     private long timeOfEntering;
 

@@ -45,7 +45,9 @@ public class Banya {
     }
 
     public boolean takeCustomer(Customer newCustomer) {
-        if (customersIn.size < banyaCapacity) {
+        if (customersIn.size < banyaCapacity && waterAmount >= 20 && besomsAmount >= 1) {
+            waterAmount -= 20;
+            besomsAmount--;
             customersIn.add(newCustomer);
             newCustomer.startWashing();
             return true;
@@ -77,5 +79,15 @@ public class Banya {
 
     public int getBesomsAmount() {
         return besomsAmount;
+    }
+
+    // This is govnocode, I'll replace it later
+    public boolean buyBesoms() {
+        if (money >= 200 && besomsAmount < 20) {
+            money -= 200;
+            besomsAmount++;
+            return true;
+        }
+        return false;
     }
 }

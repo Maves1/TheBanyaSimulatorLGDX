@@ -17,4 +17,8 @@ public class PanelIndicator extends PanelElement {
         this.height = imageHeight;
     }
 
+    public void updateValue(String newValue) {
+        this.text = newValue;
+    }
+
 }
