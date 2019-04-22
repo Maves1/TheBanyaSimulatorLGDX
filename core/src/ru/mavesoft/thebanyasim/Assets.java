@@ -13,7 +13,7 @@ public class Assets {
     static String man = "man.png";
     static String manBackground = "backgrounds/manBackground.png";
     static String sun = "sun.png";
-    static String splashScreen = "splashscreen.png";
+    static String splashScreen = "splashscreen.jpg";
     static String panelBackground = "backgrounds/panelBackground.png";
     static String waterIndicator = "indicators/indicatorWaterdrop.png";
     static String besomIndicator = "indicators/indicatorBesom.png";

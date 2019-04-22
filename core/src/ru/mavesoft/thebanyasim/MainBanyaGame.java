@@ -4,16 +4,26 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.Iterator;
 
-public class MainBanyaGame implements Screen, GestureDetector.GestureListener {
+public class MainBanyaGame extends Stage implements Screen {
+
     // Service variables
     GameManager game;
     boolean firstLaunch;
@@ -32,6 +42,7 @@ public class MainBanyaGame implements Screen, GestureDetector.GestureListener {
     PanelIndicator besomPanelIndicator;
     int indicatorWidth = 40;
 
+    // Textures
     Texture backgroundTexture;
     Texture banyaTexture;
     Texture sunTexture;
@@ -41,6 +52,9 @@ public class MainBanyaGame implements Screen, GestureDetector.GestureListener {
     Texture panelBgTexture;
     Texture waterIcoTexture;
     Texture besomsIcoTexture;
+
+    //Images
+    Image banyaImage;
 
     int manWidth = 300;
     int manHeight = 400;
@@ -60,14 +74,11 @@ public class MainBanyaGame implements Screen, GestureDetector.GestureListener {
 
     Array<Customer> arrayCustomers;
     float timeLastCustomerSpawned;
-    float customerSpawnFrequency = MathUtils.random(7, 15) * 1000000000f;
+    float customerSpawnFrequency = MathUtils.random(5, 8) * 1000000000f;
 
     long timeSinceLastTouch;
 
     public MainBanyaGame(final GameManager gameManager) {
-
-        GestureDetector gd = new GestureDetector(this);
-        Gdx.input.setInputProcessor(gd);
         // All needed variables are initialized here
         this.game = gameManager;
         banya = new Banya(game);
@@ -85,6 +96,20 @@ public class MainBanyaGame implements Screen, GestureDetector.GestureListener {
         panelBgTexture = game.assetManager.get(Assets.panelBackground);
         waterIcoTexture = game.assetManager.get(Assets.waterIndicator);
         besomsIcoTexture = game.assetManager.get(Assets.besomIndicator);
+
+        //Images
+        banyaImage = new Image(banyaTexture);
+        banyaImage.setWidth(banyaWidth);
+        banyaImage.setHeight(banyaHeight);
+        banyaImage.setX(GameManager.SCREEN_WIDTH / 2 - banyaWidth / 2);
+        banyaImage.setY(25);
+        banyaImage.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                banya.buyBesoms();
+                banya.buyWater();
+            }
+        });
 
         centerPanel.setBackground(panelBgTexture);
         centerPanel.addElement("banyaName", banya.getName(), 0, 30, 2);
@@ -106,8 +131,10 @@ public class MainBanyaGame implements Screen, GestureDetector.GestureListener {
         timeLastCloudSpawned = TimeUtils.nanoTime();
 
         arrayCustomers = new Array<Customer>();
-        arrayCustomers.add(new Customer(GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT, game.assetManager));
-        timeLastCustomerSpawned = TimeUtils.nanoTime();
+        spawnNewCustomer();
+        Gdx.input.setInputProcessor(this);
+        this.addActor(banyaImage);
+
     }
 
     @Override
@@ -171,7 +198,8 @@ public class MainBanyaGame implements Screen, GestureDetector.GestureListener {
         sunRotation += sunRotSpeed * Gdx.graphics.getDeltaTime();
 
         game.spriteBatch.draw(backgroundTexture, 0, 0, GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT);
-        game.spriteBatch.draw(banyaTexture, GameManager.SCREEN_WIDTH / 2 - banyaWidth / 2, 25, banyaWidth, banyaHeight);
+        // game.spriteBatch.draw(banyaTexture, GameManager.SCREEN_WIDTH / 2 - banyaWidth / 2, 25, banyaWidth, banyaHeight);
+        banyaImage.draw(game.spriteBatch, 1f);
         game.spriteBatch.draw(sunRegion, GameManager.SCREEN_WIDTH - 200, GameManager.SCREEN_HEIGHT - 225,
                 sunWidth / 2, sunHeight / 2, sunWidth, sunHeight, 1.0f, 1.0f, sunRotation);
         for (Iterator<Cloud> iterator = arrayClouds.iterator(); iterator.hasNext(); ) {
@@ -196,15 +224,17 @@ public class MainBanyaGame implements Screen, GestureDetector.GestureListener {
             Customer customer = iterator.next();
             customer.walk(Gdx.graphics.getDeltaTime());
 
-            if (customer.x < 0 - customer.getWidth() && customer.direction == 0) {
+            if (customer.getX() < 0 - customer.getWidth() && customer.direction == 0) {
                 iterator.remove();
-            } else if (customer.x > GameManager.SCREEN_WIDTH && customer.direction == 1) {
+                customer.remove();
+            } else if (customer.getX() > GameManager.SCREEN_WIDTH && customer.direction == 1) {
                 iterator.remove();
+                customer.remove();
             }
         }
 
         for (Customer customer : arrayCustomers) {
-            game.spriteBatch.draw(customer.getTexture(), customer.x, customer.y,
+            game.spriteBatch.draw(customer.getTexture(), customer.getX(), customer.getY(),
                     customer.getWidth(), customer.getHeight());
         }
     }
@@ -221,9 +251,7 @@ public class MainBanyaGame implements Screen, GestureDetector.GestureListener {
     public void processCustomers() {
         if ((TimeUtils.nanoTime() - timeLastCustomerSpawned >= customerSpawnFrequency)
                 && (arrayCustomers.size < 5)) {
-            arrayCustomers.add(new Customer(GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT, game.assetManager));
-            timeLastCustomerSpawned = TimeUtils.nanoTime();
-            customerSpawnFrequency = MathUtils.random(7, 15) * 1000000000f;
+            spawnNewCustomer();
         }
     }
 
@@ -232,62 +260,21 @@ public class MainBanyaGame implements Screen, GestureDetector.GestureListener {
         besomPanelIndicator.updateValue(Integer.toString(banya.getBesomsAmount()));
     }
 
-    @Override
-    public boolean touchDown(float v, float v1, int i, int i1) {
-        return false;
-    }
-
-    @Override
-    public boolean tap(float v, float v1, int i, int i1) {
-        Gdx.app.log("Tap", "" + v + " " + v1 + " " + i + " " + i1);
-        boolean hasTapped = false;
-        for (Iterator<Customer> iterator = arrayCustomers.iterator(); iterator.hasNext(); ) {
-            Customer customer = iterator.next();
-            Vector2 touchPos = new Vector2(v, GameManager.SCREEN_HEIGHT - v1);
-
-            if (customer.contains(touchPos)) {
+    public void spawnNewCustomer() {
+        final Customer customer = new Customer(GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT, game.assetManager);
+        customer.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("Tapped", "Customer");
                 if (banya.takeCustomer(customer)) {
-                    iterator.remove();
-                    hasTapped = true;
+                    arrayCustomers.removeValue(customer, true);
+                    customer.remove();
                 }
             }
-        }
-        // banya.buyBesoms();
-        return false;
+        });
+        arrayCustomers.add(customer);
+        this.addActor(customer);
+        timeLastCustomerSpawned = TimeUtils.nanoTime();
     }
 
-    @Override
-    public boolean longPress(float v, float v1) {
-        return false;
-    }
-
-    @Override
-    public boolean fling(float v, float v1, int i) {
-        return false;
-    }
-
-    @Override
-    public boolean pan(float v, float v1, float v2, float v3) {
-        return false;
-    }
-
-    @Override
-    public boolean panStop(float v, float v1, int i, int i1) {
-        return false;
-    }
-
-    @Override
-    public boolean zoom(float v, float v1) {
-        return false;
-    }
-
-    @Override
-    public boolean pinch(Vector2 vector2, Vector2 vector21, Vector2 vector22, Vector2 vector23) {
-        return false;
-    }
-
-    @Override
-    public void pinchStop() {
-
-    }
 }

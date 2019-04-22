@@ -21,7 +21,7 @@ public class Banya {
     // Banya Preferences for all levels
     private int[] banyaCapacities = {2, 3, 7, 10, 15, 25, 50};
     private int[] banyaWashDurations = {5, 5, 5, 5, 5, 5, 5};
-    private int[] banyaProfits = {200, 200, 200, 200, 200, 200, 200};
+    private int[] banyaProfits = {400, 400, 400, 400, 400, 400, 400};
 
     // Banya Preferences for current level
     private int banyaCapacity;
@@ -86,6 +86,15 @@ public class Banya {
         if (money >= 200 && besomsAmount < 20) {
             money -= 200;
             besomsAmount++;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean buyWater() {
+        if (money >= 100 && waterAmount < 180) {
+            money -= 100;
+            waterAmount += 20;
             return true;
         }
         return false;
