@@ -30,6 +30,7 @@ public class MainBanyaGame extends Stage implements Screen {
 
     Banya banya;
 
+    // Panels
     Panel centerPanel;
     int centerPanelWidth = 250;
     int centerPanelHeight = 125;
@@ -37,6 +38,10 @@ public class MainBanyaGame extends Stage implements Screen {
     Panel statusPanel;
     int statusPanelWidth = GameManager.SCREEN_WIDTH;
     int statusPanelHeight = 50;
+
+    Panel resShopPanel;
+    int resShopPanelWidth = GameManager.SCREEN_WIDTH - 100;
+    int resShopPanelHeight = 250;
 
     PanelIndicator waterPanelIndicator;
     PanelIndicator besomPanelIndicator;
@@ -55,6 +60,8 @@ public class MainBanyaGame extends Stage implements Screen {
 
     //Images
     Image banyaImage;
+    Image btnBuyBesoms;
+    Image btnBuyWater;
 
     int manWidth = 300;
     int manHeight = 400;
@@ -82,10 +89,14 @@ public class MainBanyaGame extends Stage implements Screen {
         // All needed variables are initialized here
         this.game = gameManager;
         banya = new Banya(game);
+
+        //Panels
         centerPanel = new Panel(game, GameManager.SCREEN_WIDTH / 2 - centerPanelWidth / 2,
                 GameManager.SCREEN_HEIGHT - 250, centerPanelWidth, centerPanelHeight);
         statusPanel = new Panel(game, 0,
                 GameManager.SCREEN_HEIGHT - statusPanelHeight, statusPanelWidth, statusPanelHeight);
+        resShopPanel = new Panel(game, GameManager.SCREEN_WIDTH / 2 - resShopPanelWidth / 2,
+                150, resShopPanelWidth, resShopPanelHeight);
 
         // Textures
         backgroundTexture = game.assetManager.get(Assets.backgrounds[0]);
@@ -103,6 +114,7 @@ public class MainBanyaGame extends Stage implements Screen {
         banyaImage.setHeight(banyaHeight);
         banyaImage.setX(GameManager.SCREEN_WIDTH / 2 - banyaWidth / 2);
         banyaImage.setY(25);
+        /*
         banyaImage.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -110,7 +122,28 @@ public class MainBanyaGame extends Stage implements Screen {
                 banya.buyWater();
             }
         });
+        */
+        this.addActor(banyaImage);
+        btnBuyBesoms = new Image((Texture) game.assetManager.get(Assets.btnPlus));
+        btnBuyWater = new Image((Texture) game.assetManager.get(Assets.btnPlus));
 
+        btnBuyBesoms.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                banya.buyBesoms();
+            }
+        });
+        btnBuyWater.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                banya.buyWater();
+            }
+        });
+        this.addActor(btnBuyBesoms);
+        this.addActor(btnBuyWater);
+
+
+        // Panel fill
         centerPanel.setBackground(panelBgTexture);
         centerPanel.addElement("banyaName", banya.getName(), 0, 30, 2);
         centerPanel.addElement("banyaMoney", Long.toString(banya.getMoney()), 0, 0, 2);
@@ -126,6 +159,13 @@ public class MainBanyaGame extends Stage implements Screen {
         statusPanel.addElement("waterAmountIndicator", waterPanelIndicator);
         statusPanel.addElement("besomsAmountIndicator", besomPanelIndicator);
 
+        resShopPanel.setBackground(panelBgTexture);
+        resShopPanel.addElement("besomIco", new PanelElement(besomsIcoTexture, 10, 100, 100, 120));
+        resShopPanel.addElement("btnBuyBesoms", new PanelElement(btnBuyBesoms, 10, 20, 100, 60));
+        resShopPanel.addElement("waterIco", new PanelElement(waterIcoTexture, 120, 100, 100, 120));
+        resShopPanel.addElement("btnBuyWater", new PanelElement(btnBuyWater, 120, 20, 100, 60));
+        // resShopPanel.addElement("waterIco", new PanelElement());
+
         arrayClouds = new Array<Cloud>();
         arrayClouds.add(new Cloud(windDirection, GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT, game.assetManager));
         timeLastCloudSpawned = TimeUtils.nanoTime();
@@ -133,7 +173,6 @@ public class MainBanyaGame extends Stage implements Screen {
         arrayCustomers = new Array<Customer>();
         spawnNewCustomer();
         Gdx.input.setInputProcessor(this);
-        this.addActor(banyaImage);
 
     }
 
@@ -151,6 +190,7 @@ public class MainBanyaGame extends Stage implements Screen {
         drawEnvironment();
         centerPanel.draw();
         statusPanel.draw();
+        resShopPanel.draw();
         game.spriteBatch.end();
     }
 

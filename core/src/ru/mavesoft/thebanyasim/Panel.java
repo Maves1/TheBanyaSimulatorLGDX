@@ -1,6 +1,7 @@
 package ru.mavesoft.thebanyasim;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 import java.util.HashMap;
 
@@ -44,6 +45,8 @@ public class Panel {
                 game.bitmapFont.draw(game.spriteBatch, panelElement.getText(),
                         x + panelElement.getX() + panelElement.getWidth(),
                         y + panelElement.getY() + game.bitmapFont.getData().xHeight * 2);
+            } else if (entry.getValue().getElementType() == PanelElement.TYPE_IMAGE) {
+                entry.getValue().getImage().draw(game.spriteBatch, 1f);
             }
         }
     }
@@ -57,6 +60,12 @@ public class Panel {
     }
 
     public void addElement(String key, PanelElement element) {
+        if (element.getElementType() == PanelElement.TYPE_IMAGE) {
+            element.x += this.x;
+            element.y += this.y;
+            element.getImage().setX(element.x);
+            element.getImage().setY(element.y);
+        }
         panelElements.put(key, element);
     }
 
