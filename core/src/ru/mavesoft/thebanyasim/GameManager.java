@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 public class GameManager extends Game {
 
@@ -19,6 +20,7 @@ public class GameManager extends Game {
     SpriteBatch spriteBatch;
     BitmapFont bitmapFont;
     GlyphLayout layout;
+    ExtendViewport viewport;
 
     Banya banya;
 
@@ -33,17 +35,18 @@ public class GameManager extends Game {
 
     @Override
     public void create() {
+        SCREEN_HEIGHT = 754;
+        SCREEN_WIDTH = 480;
         assetManager = new AssetManager();
         gamePreferences = Gdx.app.getPreferences("GamePreferences");
         camera = new OrthographicCamera();
         camera.position.set(0, 0, 0);
         camera.setToOrtho(false, 480, 754);
+        viewport = new ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera);
         // SCREEN_HEIGHT = Gdx.graphics.getHeight();
         // SCREEN_WIDTH = Gdx.graphics.getWidth();
-        SCREEN_HEIGHT = 754;
-        SCREEN_WIDTH = 480;
         spriteBatch = new SpriteBatch();
-        spriteBatch.setProjectionMatrix(camera.combined);
+        spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         bitmapFont = new BitmapFont();
         bitmapFont.getData().setScale(2f);
         layout = new GlyphLayout();

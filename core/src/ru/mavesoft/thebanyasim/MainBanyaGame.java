@@ -1,5 +1,6 @@
 package ru.mavesoft.thebanyasim;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -88,6 +89,9 @@ public class MainBanyaGame extends Stage implements Screen {
     public MainBanyaGame(final GameManager gameManager) {
         // All needed variables are initialized here
         this.game = gameManager;
+        this.setViewport(game.viewport);
+        this.getViewport().update(GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT);
+        // this.getViewport().setWorldSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         banya = new Banya(game);
 
         //Panels
