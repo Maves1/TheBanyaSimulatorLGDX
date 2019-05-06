@@ -43,6 +43,7 @@ public class MainBanyaGame extends Stage implements Screen {
     Panel resShopPanel;
     int resShopPanelWidth = GameManager.SCREEN_WIDTH - 100;
     int resShopPanelHeight = 250;
+    boolean showShop;
 
     PanelIndicator waterPanelIndicator;
     PanelIndicator besomPanelIndicator;
@@ -84,8 +85,6 @@ public class MainBanyaGame extends Stage implements Screen {
     float timeLastCustomerSpawned;
     float customerSpawnFrequency = MathUtils.random(5, 8) * 1000000000f;
 
-    long timeSinceLastTouch;
-
     public MainBanyaGame(final GameManager gameManager) {
         // All needed variables are initialized here
         this.game = gameManager;
@@ -101,6 +100,7 @@ public class MainBanyaGame extends Stage implements Screen {
                 GameManager.SCREEN_HEIGHT - statusPanelHeight, statusPanelWidth, statusPanelHeight);
         resShopPanel = new Panel(game, GameManager.SCREEN_WIDTH / 2 - resShopPanelWidth / 2,
                 150, resShopPanelWidth, resShopPanelHeight);
+        showShop = false;
 
         // Textures
         backgroundTexture = game.assetManager.get(Assets.backgrounds[0]);
@@ -118,15 +118,20 @@ public class MainBanyaGame extends Stage implements Screen {
         banyaImage.setHeight(banyaHeight);
         banyaImage.setX(GameManager.SCREEN_WIDTH / 2 - banyaWidth / 2);
         banyaImage.setY(25);
-        /*
         banyaImage.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                banya.buyBesoms();
-                banya.buyWater();
+                showShop = !showShop;
+                if (showShop) {
+                    addActor(btnBuyBesoms);
+                    addActor(btnBuyWater);
+                } else {
+                    btnBuyBesoms.remove();
+                    btnBuyWater.remove();
+                }
             }
         });
-        */
+
         this.addActor(banyaImage);
         btnBuyBesoms = new Image((Texture) game.assetManager.get(Assets.btnPlus));
         btnBuyWater = new Image((Texture) game.assetManager.get(Assets.btnPlus));
@@ -194,7 +199,9 @@ public class MainBanyaGame extends Stage implements Screen {
         drawEnvironment();
         centerPanel.draw();
         statusPanel.draw();
-        resShopPanel.draw();
+        if (showShop) {
+            resShopPanel.draw();
+        }
         game.spriteBatch.end();
     }
 
@@ -319,6 +326,10 @@ public class MainBanyaGame extends Stage implements Screen {
         arrayCustomers.add(customer);
         this.addActor(customer);
         timeLastCustomerSpawned = TimeUtils.nanoTime();
+    }
+
+    public void showResShop() {
+
     }
 
 }
