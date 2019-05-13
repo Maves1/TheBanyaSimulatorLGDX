@@ -78,19 +78,19 @@ public class MainBanyaGame extends Stage implements Screen {
 
     Array<Cloud> arrayClouds;
     float timeLastCloudSpawned;
-    float cloudSpawnFrequency = MathUtils.random(15, 20) * 1000000000f;
+    float cloudSpawnFrequency = MathUtils.random(18, 24) * 1000000000f;
     short windDirection = (short) MathUtils.random(1);
 
     Array<Customer> arrayCustomers;
     float timeLastCustomerSpawned;
-    float customerSpawnFrequency = MathUtils.random(5, 8) * 1000000000f;
+    float customerSpawnFrequency = MathUtils.random(3, 6) * 1000000000f;
 
     public MainBanyaGame(final GameManager gameManager) {
         // All needed variables are initialized here
         this.game = gameManager;
         this.setViewport(game.viewport);
-        this.getViewport().update(GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT);
-        // this.getViewport().setWorldSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        this.getViewport().getCamera().position.set(0 - GameManager.SCREEN_WIDTH / 2, 0, 0);
+
         banya = new Banya(game);
 
         //Panels
@@ -132,7 +132,6 @@ public class MainBanyaGame extends Stage implements Screen {
             }
         });
 
-        this.addActor(banyaImage);
         btnBuyBesoms = new Image((Texture) game.assetManager.get(Assets.btnPlus));
         btnBuyWater = new Image((Texture) game.assetManager.get(Assets.btnPlus));
 
@@ -173,12 +172,12 @@ public class MainBanyaGame extends Stage implements Screen {
         resShopPanel.addElement("btnBuyBesoms", new PanelElement(btnBuyBesoms, 10, 20, 100, 60));
         resShopPanel.addElement("waterIco", new PanelElement(waterIcoTexture, 120, 100, 100, 120));
         resShopPanel.addElement("btnBuyWater", new PanelElement(btnBuyWater, 120, 20, 100, 60));
-        // resShopPanel.addElement("waterIco", new PanelElement());
 
         arrayClouds = new Array<Cloud>();
         arrayClouds.add(new Cloud(windDirection, GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT, game.assetManager));
         timeLastCloudSpawned = TimeUtils.nanoTime();
 
+        this.addActor(banyaImage);
         arrayCustomers = new Array<Customer>();
         spawnNewCustomer();
         Gdx.input.setInputProcessor(this);
@@ -203,6 +202,7 @@ public class MainBanyaGame extends Stage implements Screen {
             resShopPanel.draw();
         }
         game.spriteBatch.end();
+        this.getCamera().update();
     }
 
     @Override
@@ -212,7 +212,11 @@ public class MainBanyaGame extends Stage implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
+        this.getViewport().update(width, height);
+        this.getCamera().viewportWidth = GameManager.SCREEN_WIDTH;
+        this.getCamera().viewportHeight = GameManager.SCREEN_HEIGHT;
+        this.getCamera().position.set(GameManager.SCREEN_WIDTH / 2, GameManager.SCREEN_HEIGHT / 2, 0);
+        this.getCamera().update();
     }
 
     @Override
@@ -295,7 +299,7 @@ public class MainBanyaGame extends Stage implements Screen {
                 && (arrayClouds.size < 5)) {
             arrayClouds.add(new Cloud(windDirection, GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT, game.assetManager));
             timeLastCloudSpawned = TimeUtils.nanoTime();
-            cloudSpawnFrequency = MathUtils.random(15, 20) * 1000000000f;
+            cloudSpawnFrequency = MathUtils.random(18, 24) * 1000000000f;
         }
     }
 
@@ -313,6 +317,7 @@ public class MainBanyaGame extends Stage implements Screen {
 
     public void spawnNewCustomer() {
         final Customer customer = new Customer(GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT, game.assetManager);
+        customerSpawnFrequency = MathUtils.random(3, 6) * 1000000000f;
         customer.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
