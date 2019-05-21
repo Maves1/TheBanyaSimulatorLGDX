@@ -72,6 +72,7 @@ public class FirstLaunchScreen implements Screen {
                 game.gamePreferences.putLong("banyaMoney", 0);
                 game.gamePreferences.putInteger("banyaWaterAmount", 100);
                 game.gamePreferences.putInteger("banyaBesomsAmount", 2);
+                game.gamePreferences.putInteger("banyaWoodAmount", 5);
                 game.gamePreferences.flush();
                 game.setScreen(new MainBanyaGame(game));
             }

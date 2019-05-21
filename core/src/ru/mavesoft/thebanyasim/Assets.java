@@ -17,5 +17,6 @@ public class Assets {
     static String panelBackground = "backgrounds/panelBackground.png";
     static String waterIndicator = "indicators/indicatorWaterdrop.png";
     static String besomIndicator = "indicators/indicatorBesom.png";
+    static String woodIndicator = "indicators/indicatorWood.png";
     static String btnPlus = "buttons/btnPlus.png";
 }

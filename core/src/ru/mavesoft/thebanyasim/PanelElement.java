@@ -52,6 +52,9 @@ public class PanelElement {
         this.x = x;
         this.y = y;
     }
+    public void updateValue(String newValue) {
+        this.text = newValue;
+    }
 
     public int getElementType() {
         return elementType;

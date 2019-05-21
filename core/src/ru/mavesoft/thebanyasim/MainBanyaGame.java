@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
@@ -36,6 +37,8 @@ public class MainBanyaGame extends Stage implements Screen {
     int centerPanelWidth = 250;
     int centerPanelHeight = 125;
 
+    GlyphLayout glyphLayout;
+
     Panel statusPanel;
     int statusPanelWidth = GameManager.SCREEN_WIDTH;
     int statusPanelHeight = 50;
@@ -45,9 +48,17 @@ public class MainBanyaGame extends Stage implements Screen {
     int resShopPanelHeight = 250;
     boolean showShop;
 
+    Panel gamesPanel;
+    int gamesPanelWidth = 300;
+    int gamesPanelHeight = 250;
+
     PanelIndicator waterPanelIndicator;
     PanelIndicator besomPanelIndicator;
+    PanelIndicator woodPanelIndicator;
     int indicatorWidth = 40;
+    int indicatorMargin = 30;
+
+    PanelElement currCapacityElement;
 
     // Textures
     Texture backgroundTexture;
@@ -59,17 +70,20 @@ public class MainBanyaGame extends Stage implements Screen {
     Texture panelBgTexture;
     Texture waterIcoTexture;
     Texture besomsIcoTexture;
+    Texture woodIcoTexture;
 
     //Images
     Image banyaImage;
     Image btnBuyBesoms;
     Image btnBuyWater;
+    Image btnBuyWood;
+    Image btnGames;
 
     int manWidth = 300;
     int manHeight = 400;
 
     int banyaWidth = 350;
-    int banyaHeight = 500;
+    int banyaHeight = 300;
 
     int sunWidth = 200;
     int sunHeight = 200;
@@ -100,6 +114,8 @@ public class MainBanyaGame extends Stage implements Screen {
                 GameManager.SCREEN_HEIGHT - statusPanelHeight, statusPanelWidth, statusPanelHeight);
         resShopPanel = new Panel(game, GameManager.SCREEN_WIDTH / 2 - resShopPanelWidth / 2,
                 150, resShopPanelWidth, resShopPanelHeight);
+        gamesPanel = new Panel(game, GameManager.SCREEN_WIDTH / 2 - gamesPanelWidth / 2,
+                GameManager.SCREEN_HEIGHT / 2, gamesPanelWidth, gamesPanelHeight);
         showShop = false;
 
         // Textures
@@ -111,6 +127,7 @@ public class MainBanyaGame extends Stage implements Screen {
         panelBgTexture = game.assetManager.get(Assets.panelBackground);
         waterIcoTexture = game.assetManager.get(Assets.waterIndicator);
         besomsIcoTexture = game.assetManager.get(Assets.besomIndicator);
+        woodIcoTexture = game.assetManager.get(Assets.woodIndicator);
 
         //Images
         banyaImage = new Image(banyaTexture);
@@ -125,53 +142,82 @@ public class MainBanyaGame extends Stage implements Screen {
                 if (showShop) {
                     addActor(btnBuyBesoms);
                     addActor(btnBuyWater);
+                    addActor(btnBuyWood);
                 } else {
                     btnBuyBesoms.remove();
                     btnBuyWater.remove();
+                    btnBuyWood.remove();
                 }
             }
         });
 
         btnBuyBesoms = new Image((Texture) game.assetManager.get(Assets.btnPlus));
         btnBuyWater = new Image((Texture) game.assetManager.get(Assets.btnPlus));
+        btnBuyWood = new Image((Texture) game.assetManager.get(Assets.btnPlus));
 
         btnBuyBesoms.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                banya.buyBesoms();
+                if (banya.buyBesoms()) {
+                    updateIndicators();
+                }
             }
         });
         btnBuyWater.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                banya.buyWater();
+                if (banya.buyWater()) {
+                    updateIndicators();
+                }
+            }
+        });
+        btnBuyWood.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (banya.buyWood()) {
+                    updateIndicators();
+                }
             }
         });
         this.addActor(btnBuyBesoms);
         this.addActor(btnBuyWater);
+        this.addActor(btnBuyWood);
 
-
-        // Panel fill
+        // Panels fill
         centerPanel.setBackground(panelBgTexture);
-        centerPanel.addElement("banyaName", banya.getName(), 0, 30, 2);
-        centerPanel.addElement("banyaMoney", Long.toString(banya.getMoney()), 0, 0, 2);
+        glyphLayout = new GlyphLayout(game.bitmapFont, banya.getName());
+        centerPanel.addElement("banyaName", banya.getName(), (int) (centerPanel.getWidth() / 2 - glyphLayout.width / 2), 50, 2);
+        glyphLayout = new GlyphLayout(game.bitmapFont, Long.toString(banya.getMoney()));
+        centerPanel.addElement("banyaMoney", Long.toString(banya.getMoney()), (int) (centerPanel.getWidth() / 2 - glyphLayout.width / 2), 20, 2);
 
         statusPanel.setBackground(panelBgTexture);
+        currCapacityElement = new PanelElement(banya.getCurrentCustomers() + "/" + banya.getBanyaCapacity(), 10, 0, 2);
+        woodPanelIndicator = new PanelIndicator(woodIcoTexture,
+                Integer.toString(banya.getWoodAmount()),
+                GameManager.SCREEN_WIDTH - indicatorWidth * 6 - indicatorMargin, 0,
+                50, statusPanelHeight, 2);
         waterPanelIndicator = new PanelIndicator(waterIcoTexture,
                 Integer.toString(banya.getWaterAmount()),
-                GameManager.SCREEN_WIDTH - indicatorWidth * 4 - 20, 0,
+                GameManager.SCREEN_WIDTH - indicatorWidth * 4 - indicatorMargin, 0,
                 indicatorWidth, statusPanelHeight, 2);
         besomPanelIndicator = new PanelIndicator(besomsIcoTexture,
                 Integer.toString(banya.getBesomsAmount()),
-                GameManager.SCREEN_WIDTH - indicatorWidth * 2, 0, 50, statusPanelHeight, 2);
+                GameManager.SCREEN_WIDTH - indicatorWidth * 2, 0,
+                50, statusPanelHeight, 2);
+        statusPanel.addElement("banyaCapacityElement", currCapacityElement);
         statusPanel.addElement("waterAmountIndicator", waterPanelIndicator);
         statusPanel.addElement("besomsAmountIndicator", besomPanelIndicator);
+        statusPanel.addElement("woodAmountIndicator", woodPanelIndicator);
 
         resShopPanel.setBackground(panelBgTexture);
-        resShopPanel.addElement("besomIco", new PanelElement(besomsIcoTexture, 10, 100, 100, 120));
-        resShopPanel.addElement("btnBuyBesoms", new PanelElement(btnBuyBesoms, 10, 20, 100, 60));
-        resShopPanel.addElement("waterIco", new PanelElement(waterIcoTexture, 120, 100, 100, 120));
-        resShopPanel.addElement("btnBuyWater", new PanelElement(btnBuyWater, 120, 20, 100, 60));
+        resShopPanel.addElement("besomIco", new PanelElement(besomsIcoTexture, resShopPanelWidth / 3 - 112, 100, 100, 120));
+        resShopPanel.addElement("btnBuyBesoms", new PanelElement(btnBuyBesoms, resShopPanelWidth / 3 - 112, 20, 100, 70));
+        resShopPanel.addElement("waterIco", new PanelElement(waterIcoTexture, resShopPanelWidth / 3 * 2 - 112, 100, 100, 120));
+        resShopPanel.addElement("btnBuyWater", new PanelElement(btnBuyWater, resShopPanelWidth / 3 * 2 - 112, 20, 100, 70));
+        resShopPanel.addElement("woodIco", new PanelElement(woodIcoTexture, resShopPanelWidth - 112, 100, 100, 120));
+        resShopPanel.addElement("btnBuyWood", new PanelElement(btnBuyWood, resShopPanelWidth - 112, 20, 100, 70));
+
+        gamesPanel.setBackground(panelBgTexture);
 
         arrayClouds = new Array<Cloud>();
         arrayClouds.add(new Cloud(windDirection, GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT, game.assetManager));
@@ -190,10 +236,8 @@ public class MainBanyaGame extends Stage implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.camera.update();
 
-        banya.controlCustomers();
-        centerPanel.setElement("banyaMoney", Long.toString(banya.getMoney()), 0, 0, 2);
-        updateIndicators();
-
+        banya.controlCustomers(currCapacityElement);
+        centerPanel.setElement("banyaMoney", Long.toString(banya.getMoney()), (int) (centerPanel.getWidth() / 2 - glyphLayout.width / 2), 20, 2);
         game.spriteBatch.begin();
         drawEnvironment();
         centerPanel.draw();
@@ -224,6 +268,7 @@ public class MainBanyaGame extends Stage implements Screen {
         game.gamePreferences.putLong("banyaMoney", banya.getMoney());
         game.gamePreferences.putInteger("banyaWaterAmount", banya.getWaterAmount());
         game.gamePreferences.putInteger("banyaBesomsAmount", banya.getBesomsAmount());
+        game.gamePreferences.putInteger("banyaWoodAmount", banya.getWoodAmount());
         game.gamePreferences.flush();
     }
 
@@ -245,6 +290,9 @@ public class MainBanyaGame extends Stage implements Screen {
         manTexture.dispose();
         manBgTexture.dispose();
         panelBgTexture.dispose();
+        waterIcoTexture.dispose();
+        besomsIcoTexture.dispose();
+        woodIcoTexture.dispose();
     }
 
     public void drawEnvironment() {
@@ -313,6 +361,8 @@ public class MainBanyaGame extends Stage implements Screen {
     public void updateIndicators() {
         waterPanelIndicator.updateValue(Integer.toString(banya.getWaterAmount()));
         besomPanelIndicator.updateValue(Integer.toString(banya.getBesomsAmount()));
+        woodPanelIndicator.updateValue(Integer.toString(banya.getWoodAmount()));
+        currCapacityElement.updateValue(banya.getCurrentCustomers() + "/" + banya.getBanyaCapacity());
     }
 
     public void spawnNewCustomer() {
@@ -323,6 +373,7 @@ public class MainBanyaGame extends Stage implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("Tapped", "Customer");
                 if (banya.takeCustomer(customer)) {
+                    updateIndicators();
                     arrayCustomers.removeValue(customer, true);
                     customer.remove();
                 }

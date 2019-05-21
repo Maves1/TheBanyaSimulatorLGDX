@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 public class Customer extends Actor {
     public int direction;
 
-    private float speed = 70f;
+    private float speed = 90f;
 
     private long timeOfEntering;
 

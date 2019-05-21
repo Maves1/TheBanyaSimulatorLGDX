@@ -43,7 +43,7 @@ public class Panel {
                         y + panelElement.getY(), panelElement.getWidth(), panelElement.getHeight());
                 game.bitmapFont.getData().setScale(panelElement.getScale());
                 game.bitmapFont.draw(game.spriteBatch, panelElement.getText(),
-                        x + panelElement.getX() + panelElement.getWidth(),
+                        x + panelElement.getX() + panelElement.getWidth() + 5,
                         y + panelElement.getY() + game.bitmapFont.getData().xHeight * 2);
             } else if (entry.getValue().getElementType() == PanelElement.TYPE_IMAGE) {
                 entry.getValue().getImage().draw(game.spriteBatch, 1f);
