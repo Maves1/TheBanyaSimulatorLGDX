@@ -30,6 +30,8 @@ public class MainBanyaGame extends Stage implements Screen {
     GameManager game;
     boolean firstLaunch;
 
+    boolean isRunning = true;
+
     Banya banya;
 
     // Panels
@@ -49,7 +51,7 @@ public class MainBanyaGame extends Stage implements Screen {
     boolean showShop;
 
     Panel gamesPanel;
-    int gamesPanelWidth = 300;
+    int gamesPanelWidth = 330;
     int gamesPanelHeight = 250;
     boolean showGames;
 
@@ -72,6 +74,7 @@ public class MainBanyaGame extends Stage implements Screen {
     Texture waterIcoTexture;
     Texture besomsIcoTexture;
     Texture woodIcoTexture;
+    Texture egg;
 
     //Images
     Image banyaImage;
@@ -135,6 +138,7 @@ public class MainBanyaGame extends Stage implements Screen {
         waterIcoTexture = game.assetManager.get(Assets.waterIndicator);
         besomsIcoTexture = game.assetManager.get(Assets.besomIndicator);
         woodIcoTexture = game.assetManager.get(Assets.woodIndicator);
+        egg = game.assetManager.get(Assets.egg);
 
         //Images
         banyaImage = new Image(banyaTexture);
@@ -248,7 +252,7 @@ public class MainBanyaGame extends Stage implements Screen {
         resShopPanel.addElement("btnBuyWood", new PanelElement(btnBuyWood, resShopPanelWidth - 112, 20, 100, 70));
 
         gamesPanel.setBackground(panelBgTexture);
-        gamesPanel.addElement("gameRDC", "RaindropCatcher", 10, gamesPanelHeight - 20, 2);
+        gamesPanel.addElement("gameRDC", "RaindropCatch", 10, gamesPanelHeight - 60, 2);
         gamesPanel.addElement("btnStartRDC", new PanelElement(btnStartRDC, gamesPanelWidth - btnGamesWidth - 10, gamesPanelHeight - btnGamesHeight - 10, btnGamesWidth, btnGamesHeight));
 
         arrayClouds = new Array<Cloud>();
@@ -268,26 +272,37 @@ public class MainBanyaGame extends Stage implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        game.camera.update();
 
-        if (TimeUtils.nanoTime() - timeSinceLastIndUpd >= 1000000000L) {
-            updateIndicators();
+        if (banya.getMoney() < 0) {
+            isRunning = false;
         }
-        banya.controlCustomers(currCapacityElement);
-        banya.controlWood();
-        centerPanel.setElement("banyaMoney", Long.toString(banya.getMoney()), (int) (centerPanel.getWidth() / 2 - glyphLayout.width / 2), 20, 2);
-        game.spriteBatch.begin();
-        drawEnvironment();
-        centerPanel.draw();
-        statusPanel.draw();
-        if (showShop) {
-            resShopPanel.draw();
+
+        if (isRunning) {
+            game.camera.update();
+
+            if (TimeUtils.nanoTime() - timeSinceLastIndUpd >= 1000000000L) {
+                updateIndicators();
+            }
+            banya.controlCustomers(currCapacityElement);
+            banya.controlWood();
+            centerPanel.setElement("banyaMoney", Long.toString(banya.getMoney()), (int) (centerPanel.getWidth() / 2 - glyphLayout.width / 2), 20, 2);
+            game.spriteBatch.begin();
+            drawEnvironment();
+            centerPanel.draw();
+            statusPanel.draw();
+            if (showShop) {
+                resShopPanel.draw();
+            }
+            if (showGames) {
+                gamesPanel.draw();
+            }
+            game.spriteBatch.end();
+            this.getCamera().update();
+        } else {
+            game.spriteBatch.begin();
+            game.spriteBatch.draw(egg, 0, 0, GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT);
+            game.spriteBatch.end();
         }
-        if (showGames) {
-            gamesPanel.draw();
-        }
-        game.spriteBatch.end();
-        this.getCamera().update();
     }
 
     @Override

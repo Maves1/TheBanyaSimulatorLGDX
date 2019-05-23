@@ -26,4 +26,5 @@ public class Assets {
     static String bucket = "minigames/raindropcatcher/bucket.png";
     static String bgMusic = "minigames/raindropcatcher/bgmusic.mp3";
     static String dropSound = "minigames/raindropcatcher/dropsound.wav";
+    static String egg = "easteregg/egg.png";
 }
