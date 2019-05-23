@@ -19,4 +19,11 @@ public class Assets {
     static String besomIndicator = "indicators/indicatorBesom.png";
     static String woodIndicator = "indicators/indicatorWood.png";
     static String btnPlus = "buttons/btnPlus.png";
+    static String btnLogin = "buttons/btnLogin.png";
+    static String btnRegister = "buttons/btnRegister.png";
+    static String btnGames = "buttons/btnGames.png";
+    static String droplet = "minigames/raindropcatcher/droplet.png";
+    static String bucket = "minigames/raindropcatcher/bucket.png";
+    static String bgMusic = "minigames/raindropcatcher/bgmusic.mp3";
+    static String dropSound = "minigames/raindropcatcher/dropsound.wav";
 }

@@ -8,7 +8,7 @@ public class Cloud {
     public float x;
     public float y;
     private short direction;
-    private float speed = 5f;
+    private float speed = 6.0f;
     private int width = 200;
     private int height = 150;
     private Texture texture;

@@ -31,6 +31,9 @@ public class Banya {
 
     Array<Customer> customersIn;
 
+    long timeSinceLastWoodUse;
+    long woodUseFrequency;
+
     public Banya(GameManager gameManager) {
         game = gameManager;
         this.name = game.gamePreferences.getString("banyaName");
@@ -44,10 +47,11 @@ public class Banya {
         banyaCapacity = banyaCapacities[level];
         banyaWashDuration = banyaWashDurations[level];
         banyaProfit = banyaProfits[level];
+        woodUseFrequency = 2000000000L;
     }
 
     public boolean takeCustomer(Customer newCustomer) {
-        if (customersIn.size < banyaCapacity && waterAmount >= 20 && besomsAmount >= 1) {
+        if (customersIn.size < banyaCapacity && waterAmount >= 20 && besomsAmount >= 1 && woodAmount >= 1) {
             waterAmount -= 20;
             besomsAmount--;
             customersIn.add(newCustomer);
@@ -66,6 +70,22 @@ public class Banya {
                 banyaCapacity.updateValue(getCurrentCustomers() + "/" + getBanyaCapacity());
             }
         }
+    }
+
+    public void controlWood() {
+        long currTime = TimeUtils.nanoTime();
+        if (currTime - timeSinceLastWoodUse >= woodUseFrequency) {
+            useWood();
+        }
+    }
+
+    public boolean useWood() {
+        if (woodAmount > 1) {
+            woodAmount--;
+            timeSinceLastWoodUse = TimeUtils.nanoTime();
+            return true;
+        }
+        return false;
     }
 
     public String getName() {
@@ -120,11 +140,19 @@ public class Banya {
     }
 
     public boolean buyWood() {
-        if (money >= 200 && woodAmount < 50) {
+        if (money >= 200 && woodAmount < 400) {
             money -= 200;
-            woodAmount += 2;
+            woodAmount += 20;
             return true;
         }
         return false;
+    }
+
+    public void addWater(int amount) {
+        waterAmount += amount;
+    }
+
+    public void givePenalty(long amount) {
+        money -= amount;
     }
 }

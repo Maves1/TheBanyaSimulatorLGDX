@@ -51,6 +51,7 @@ public class MainBanyaGame extends Stage implements Screen {
     Panel gamesPanel;
     int gamesPanelWidth = 300;
     int gamesPanelHeight = 250;
+    boolean showGames;
 
     PanelIndicator waterPanelIndicator;
     PanelIndicator besomPanelIndicator;
@@ -78,6 +79,9 @@ public class MainBanyaGame extends Stage implements Screen {
     Image btnBuyWater;
     Image btnBuyWood;
     Image btnGames;
+    Image btnStartRDC;
+    int btnGamesWidth = 100;
+    int btnGamesHeight = 60;
 
     int manWidth = 300;
     int manHeight = 400;
@@ -88,7 +92,7 @@ public class MainBanyaGame extends Stage implements Screen {
     int sunWidth = 200;
     int sunHeight = 200;
     float sunRotation = 0.0f;
-    float sunRotSpeed = 5.0f;
+    float sunRotSpeed = 6.0f;
 
     Array<Cloud> arrayClouds;
     float timeLastCloudSpawned;
@@ -98,6 +102,8 @@ public class MainBanyaGame extends Stage implements Screen {
     Array<Customer> arrayCustomers;
     float timeLastCustomerSpawned;
     float customerSpawnFrequency = MathUtils.random(3, 6) * 1000000000f;
+
+    long timeSinceLastIndUpd;
 
     public MainBanyaGame(final GameManager gameManager) {
         // All needed variables are initialized here
@@ -117,6 +123,7 @@ public class MainBanyaGame extends Stage implements Screen {
         gamesPanel = new Panel(game, GameManager.SCREEN_WIDTH / 2 - gamesPanelWidth / 2,
                 GameManager.SCREEN_HEIGHT / 2, gamesPanelWidth, gamesPanelHeight);
         showShop = false;
+        showGames = false;
 
         // Textures
         backgroundTexture = game.assetManager.get(Assets.backgrounds[0]);
@@ -148,6 +155,29 @@ public class MainBanyaGame extends Stage implements Screen {
                     btnBuyWater.remove();
                     btnBuyWood.remove();
                 }
+            }
+        });
+
+        btnGames = new Image((Texture) game.assetManager.get(Assets.btnGames));
+        btnGames.setBounds(GameManager.SCREEN_WIDTH - btnGamesWidth - 5, 400, btnGamesWidth, btnGamesHeight);
+        btnGames.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                showGames = !showGames;
+                if (showGames) {
+                    addActor(btnStartRDC);
+                } else {
+                    btnStartRDC.remove();
+                }
+            }
+        });
+        this.addActor(btnGames);
+
+        btnStartRDC = new Image((Texture) game.assetManager.get(Assets.btnGames));
+        btnStartRDC.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new MGRaindropCatcher(game, banya, getContext()));
             }
         });
 
@@ -194,7 +224,7 @@ public class MainBanyaGame extends Stage implements Screen {
         currCapacityElement = new PanelElement(banya.getCurrentCustomers() + "/" + banya.getBanyaCapacity(), 10, 0, 2);
         woodPanelIndicator = new PanelIndicator(woodIcoTexture,
                 Integer.toString(banya.getWoodAmount()),
-                GameManager.SCREEN_WIDTH - indicatorWidth * 6 - indicatorMargin, 0,
+                GameManager.SCREEN_WIDTH - indicatorWidth * 6 - indicatorMargin - 16, 0,
                 50, statusPanelHeight, 2);
         waterPanelIndicator = new PanelIndicator(waterIcoTexture,
                 Integer.toString(banya.getWaterAmount()),
@@ -218,6 +248,8 @@ public class MainBanyaGame extends Stage implements Screen {
         resShopPanel.addElement("btnBuyWood", new PanelElement(btnBuyWood, resShopPanelWidth - 112, 20, 100, 70));
 
         gamesPanel.setBackground(panelBgTexture);
+        gamesPanel.addElement("gameRDC", "RaindropCatcher", 10, gamesPanelHeight - 20, 2);
+        gamesPanel.addElement("btnStartRDC", new PanelElement(btnStartRDC, gamesPanelWidth - btnGamesWidth - 10, gamesPanelHeight - btnGamesHeight - 10, btnGamesWidth, btnGamesHeight));
 
         arrayClouds = new Array<Cloud>();
         arrayClouds.add(new Cloud(windDirection, GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT, game.assetManager));
@@ -228,6 +260,8 @@ public class MainBanyaGame extends Stage implements Screen {
         spawnNewCustomer();
         Gdx.input.setInputProcessor(this);
 
+        updateIndicators();
+
     }
 
     @Override
@@ -236,7 +270,11 @@ public class MainBanyaGame extends Stage implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.camera.update();
 
+        if (TimeUtils.nanoTime() - timeSinceLastIndUpd >= 1000000000L) {
+            updateIndicators();
+        }
         banya.controlCustomers(currCapacityElement);
+        banya.controlWood();
         centerPanel.setElement("banyaMoney", Long.toString(banya.getMoney()), (int) (centerPanel.getWidth() / 2 - glyphLayout.width / 2), 20, 2);
         game.spriteBatch.begin();
         drawEnvironment();
@@ -244,6 +282,9 @@ public class MainBanyaGame extends Stage implements Screen {
         statusPanel.draw();
         if (showShop) {
             resShopPanel.draw();
+        }
+        if (showGames) {
+            gamesPanel.draw();
         }
         game.spriteBatch.end();
         this.getCamera().update();
@@ -299,10 +340,10 @@ public class MainBanyaGame extends Stage implements Screen {
         processClouds();
         processCustomers();
         sunRotation += sunRotSpeed * Gdx.graphics.getDeltaTime();
-
         game.spriteBatch.draw(backgroundTexture, 0, 0, GameManager.SCREEN_WIDTH, GameManager.SCREEN_HEIGHT);
         // game.spriteBatch.draw(banyaTexture, GameManager.SCREEN_WIDTH / 2 - banyaWidth / 2, 25, banyaWidth, banyaHeight);
         banyaImage.draw(game.spriteBatch, 1f);
+        btnGames.draw(game.spriteBatch, 1f);
         game.spriteBatch.draw(sunRegion, GameManager.SCREEN_WIDTH - 200, GameManager.SCREEN_HEIGHT - 225,
                 sunWidth / 2, sunHeight / 2, sunWidth, sunHeight, 1.0f, 1.0f, sunRotation);
         for (Iterator<Cloud> iterator = arrayClouds.iterator(); iterator.hasNext(); ) {
@@ -363,6 +404,7 @@ public class MainBanyaGame extends Stage implements Screen {
         besomPanelIndicator.updateValue(Integer.toString(banya.getBesomsAmount()));
         woodPanelIndicator.updateValue(Integer.toString(banya.getWoodAmount()));
         currCapacityElement.updateValue(banya.getCurrentCustomers() + "/" + banya.getBanyaCapacity());
+        timeSinceLastIndUpd = TimeUtils.nanoTime();
     }
 
     public void spawnNewCustomer() {
@@ -371,7 +413,6 @@ public class MainBanyaGame extends Stage implements Screen {
         customer.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("Tapped", "Customer");
                 if (banya.takeCustomer(customer)) {
                     updateIndicators();
                     arrayCustomers.removeValue(customer, true);
@@ -384,8 +425,8 @@ public class MainBanyaGame extends Stage implements Screen {
         timeLastCustomerSpawned = TimeUtils.nanoTime();
     }
 
-    public void showResShop() {
-
+    public MainBanyaGame getContext() {
+        return this;
     }
 
 }

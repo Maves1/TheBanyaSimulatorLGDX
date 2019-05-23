@@ -2,6 +2,8 @@ package ru.mavesoft.thebanyasim;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -60,6 +62,11 @@ public class SplashScreen implements Screen {
         game.assetManager.load(Assets.besomIndicator, Texture.class);
         game.assetManager.load(Assets.woodIndicator, Texture.class);
         game.assetManager.load(Assets.btnPlus, Texture.class);
+        game.assetManager.load(Assets.btnLogin, Texture.class);
+        game.assetManager.load(Assets.btnRegister, Texture.class);
+        game.assetManager.load(Assets.btnGames, Texture.class);
+        game.assetManager.load(Assets.bucket, Texture.class);
+        game.assetManager.load(Assets.droplet, Texture.class);
     }
 
     @Override
